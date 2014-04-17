@@ -1,4 +1,4 @@
-CroCoAPI
+CroCo API
 ========
 
-CrowdComputer API
+Building the future of Crowdsourcing API: crowdsourcing as a service/
