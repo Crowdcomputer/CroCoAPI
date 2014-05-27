@@ -13,8 +13,6 @@ from rest_framework import viewsets, status, parsers, renderers
 
 
 # ViewSets define the view behavior.
-from rest_framework.authtoken.models import Token
-from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.decorators import action, api_view, permission_classes, link
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
@@ -22,7 +20,6 @@ from rest_framework import exceptions
 from rest_framework.views import APIView
 from api.exceptions import NotEnoughMoney
 from api.models import Task, TaskInstance, Data, CrowdUser
-from api.permissions import IsFromApp
 from api.serializers import  TaskInstanceSerializer, CrowdUserSerializer, TaskSerializer
 
 from rest_framework_nested import routers
@@ -44,7 +41,7 @@ def get_instance_worker(pk_instance, worker):
 
 
 @api_view(['POST'])
-@permission_classes((IsFromApp, ))
+# @permission_classes((IsFromApp, ))
 def create_user(request):
     """
     Create the user, only who has an app registered
@@ -73,20 +70,26 @@ def create_user(request):
             log.debug(crowd_user.errors)
             raise exceptions.ParseError(detail=crowd_user.errors)
 
-class ObtainAuthToken(APIView):
-    throttle_classes = ()
-    permission_classes = (IsFromApp,)
-    parser_classes = (parsers.FormParser, parsers.MultiPartParser, parsers.JSONParser,)
-    renderer_classes = (renderers.JSONRenderer,)
-    serializer_class = AuthTokenSerializer
-    model = Token
+class TestToken(APIView):
+    def get(self, request):
+        ret={}
+        ret['user']=request.user.username
+        ret['app']=request.app.name
 
-    def post(self, request):
-        serializer = self.serializer_class(data=request.DATA)
-        if serializer.is_valid():
-            token, created = Token.objects.get_or_create(user=serializer.object['user'])
-            return Response({'token': token.key})
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(ret)
+    # throttle_classes = ()
+    # permission_classes = ()
+    # parser_classes = (parsers.FormParser, parsers.MultiPartParser, parsers.JSONParser,)
+    # renderer_classes = (renderers.JSONRenderer,)
+    # serializer_class = AuthTokenSerializer
+    # model = Token
+    #
+    # def post(self, request):
+    #     serializer = self.serializer_class(data=request.DATA)
+    #     if serializer.is_valid():
+    #         token, created = Token.objects.get_or_create(user=serializer.object['user'])
+    #         return Response({'token': token.key})
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class TaskView(viewsets.ModelViewSet):
     """
@@ -255,7 +258,7 @@ class InstanceView(viewsets.ModelViewSet):
             task_instance.quality=value
             task_instance.save()
             resp={}
-            resp["details"]="Quality set ("+str(value)+")"
+            resp["details"]="Quality set ("+value+")"
             return Response(resp)
         else:
             raise exceptions.ParseError(detail="choose a value between 0 and 100")

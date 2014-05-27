@@ -78,7 +78,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         # 'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
+                # 'rest_framework.authentication.TokenAuthentication',
+
+         'api.authentication.TokenAppAuthentication',
     ),
     # Use hyperlinked styles by default.
     # Only used if the `serializer_class` attribute is not set on a view.
