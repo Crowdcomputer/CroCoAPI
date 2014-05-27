@@ -10,22 +10,20 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '!2^vlmi!e5=d9o6i$5m+a0u$bp*^1q02dlm=32bcgd++8p*g)@'
-
+from settings_production import *
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
+
+
+if DEBUG:
+    from settings_local import *
+else:
+    from settings_production import *
+
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 
 # Application definition
@@ -40,6 +38,7 @@ INSTALLED_APPS = (
     'api',
     'rest_framework',
     'rest_framework.authtoken',
+    'south',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -56,29 +55,18 @@ ROOT_URLCONF = 'crocoapi.urls'
 WSGI_APPLICATION = 'crocoapi.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/1.6/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'CET'
 
 USE_I18N = True
 
 USE_L10N = True
 
 USE_TZ = True
-
 
 
 # Static files (CSS, JavaScript, Images)
@@ -104,48 +92,4 @@ REST_FRAMEWORK = {
         'api.permissions.IsOwner'
         # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ]
-}
-
-
-LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': True,
-        'formatters': {
-            'standard': {
-                'format' : "[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)s] %(message)s",
-                'datefmt' : "%d/%b/%Y %H:%M:%S"
-            },
-        },
-        'handlers': {
-            'null': {
-                'level':'DEBUG',
-                'class':'django.utils.log.NullHandler',
-            },
-            'console':{
-                'class':'logging.StreamHandler',
-                'formatter': 'standard'
-            },
-        },
-        'loggers': {
-            'django': {
-                'handlers':['console'],
-                'propagate': True,
-                'level':'WARN',
-            },
-            'django.db.backends': {
-                'handlers': ['console'],
-                'level': 'WARN',
-                'propagate': False,
-            },
-            'api': {
-                'handlers': ['console'],
-                'level': 'DEBUG',
-                'propagate': True,
-            },'rest_framework': {
-                'handlers': ['console'],
-                'level': 'DEBUG',
-                'propagate': True,
-            }
-
-    }
 }

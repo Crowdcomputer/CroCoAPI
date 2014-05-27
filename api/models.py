@@ -1,15 +1,31 @@
 from datetime import datetime, timedelta
-import json
+from decimal import Decimal
+import os
+import binascii
+
 from django.contrib.auth.models import User
+from django.core.validators import MaxValueValidator
 from django.db import models
-from django.dispatch.dispatcher import receiver
 from jsonfield import JSONField
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 
+
 # Create your models here.
+class App(models.Model):
+    owner = models.ForeignKey(User)
+    token = models.CharField(max_length=40, primary_key=True)
+    name = models.CharField(max_length=100, default="-")
+
+    def save(self, *args, **kwargs):
+        if not self.token:
+            self.token = binascii.hexlify(os.urandom(20))
+        return super(App, self).save(*args, **kwargs)
+
+    def __unicode__(self):
+        return '[' + str(self.owner.username) + '] ' + str(self.name)
 
 class Data(models.Model):
     value = JSONField()
@@ -27,6 +43,11 @@ class Data(models.Model):
 
 STATUS_CHOISES = (('PR', 'In process'), ('ST', 'Stopped'), ('FN', 'Finished'), ('DL', 'Deleted'),)
 
+class CrowdUser(models.Model):
+    user = models.OneToOneField(User)
+    balance = models.DecimalField(decimal_places=2, max_digits=8, default=Decimal('0.0'))
+
+
 
 class Task(models.Model):
     owner = models.ForeignKey(User)
@@ -37,6 +58,9 @@ class Task(models.Model):
     date_deadline = models.DateTimeField(default=lambda: (datetime.now() + timedelta(days=7)), auto_now_add=False)
     # parameters = jsonfield.JSONField(blank=True)
     # objects = InheritanceManager()
+    uuid = models.CharField(max_length=36, default='')
+    page_url = models.URLField(max_length=400, default='', null=True, blank=True)
+    reward = models.DecimalField(decimal_places=2, max_digits=8, default=Decimal('0.0'), blank=True, null=True)
     status = models.CharField(max_length=2, choices=STATUS_CHOISES, default='ST', blank=True)
 
     def __unicode__(self):
@@ -102,11 +126,10 @@ class Task(models.Model):
 
 
 # PLATFORMS = (('CC', 'CrowdComputer'), ('MT', 'Amazon Mechanical Turk'),)
-class HumanTask(Task):
+# class HumanTask(Task):
     # is_unique = models.BooleanField(default=True)
     # number_of_instances = models.IntegerField(default=1)
-    uuid = models.CharField(max_length=36, default='')
-    page_url = models.URLField(max_length=400, default='', null=True, blank=True)
+
     # platform = models.CharField(max_length=2, choices=PLATFORMS, default='CC')
     # validation = models.CharField(max_length=400, default=None,null=True, blank=True)
     # reward = models.OneToOneField(Reward, null=True, blank=True)
@@ -127,7 +150,8 @@ class TaskInstance(models.Model):
     input_data = models.ForeignKey(Data, null=True, blank=True, related_name="input_data")
     output_data = models.ForeignKey(Data, null=True, blank=True, related_name="output_data")
     uuid = models.CharField(max_length=36, default='')
-    parameters = JSONField(blank=True,null=True)
+    parameters = JSONField(blank=True, null=True)
+    quality = models.PositiveSmallIntegerField(validators=[MaxValueValidator(100)], default=0)
 
     def __unicode__(self):
         return '[' + str(self.id) + '] '
@@ -147,44 +171,44 @@ class TaskInstance(models.Model):
     def delete(self):
         self.status = 'DL'
         self.save()
-    # validation = models.OneToOneField(Process, null=True, blank=True)
+        # validation = models.OneToOneField(Process, null=True, blank=True)
 
-    # def __unicode__(self):
-    #     return str(self.id)
-    #
-    # @property
-    # def is_inprocess(self):
-    #     return self.status == 'PR'
-    #
-    # @property
-    # def is_stopped(self):
-    #     return self.status == 'ST'
-    #
-    # @property
-    # def is_finished(self):
-    #     return self.status == 'FN'
-    #
-    # @property
-    # def is_deleted(self):
-    #     return self.status == 'DL'
-    #
-    # @property
-    # def is_validation(self):
-    #     return self.status == 'VL'
-    #
-    # def start(self):
-    #     self.status = 'PR'
-    #     self.date_started = datetime.now()
-    #     self.save()
-    #
-    # def finish(self):
-    #     self.status = 'FN'
-    #     self.date_finished = datetime.now()
-    #     self.save()
-    #
-    # def validation_status(self):
-    #     self.status = 'VL'
-    #     self.save()
+        # def __unicode__(self):
+        #     return str(self.id)
+        #
+        # @property
+        # def is_inprocess(self):
+        #     return self.status == 'PR'
+        #
+        # @property
+        # def is_stopped(self):
+        #     return self.status == 'ST'
+        #
+        # @property
+        # def is_finished(self):
+        #     return self.status == 'FN'
+        #
+        # @property
+        # def is_deleted(self):
+        #     return self.status == 'DL'
+        #
+        # @property
+        # def is_validation(self):
+        #     return self.status == 'VL'
+        #
+        # def start(self):
+        #     self.status = 'PR'
+        #     self.date_started = datetime.now()
+        #     self.save()
+        #
+        # def finish(self):
+        #     self.status = 'FN'
+        #     self.date_finished = datetime.now()
+        #     self.save()
+        #
+        # def validation_status(self):
+        #     self.status = 'VL'
+        #     self.save()
 
 
 @receiver(post_save, sender=get_user_model())

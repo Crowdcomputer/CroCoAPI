@@ -1,10 +1,14 @@
 import logging
 
+from rest_framework.permissions import SAFE_METHODS
+
+
 __author__ = 'stefano'
 from rest_framework import permissions
 
 
 log = logging.getLogger(__name__)
+
 
 class IsOwner(permissions.BasePermission):
     def has_permission(self, request, view, obj=None):
@@ -32,4 +36,20 @@ class IsExecutor(permissions.BasePermission):
         if hasattr(obj, 'executor'):
             return obj.task.executor == request.user
         else:
+            return False
+
+
+class IsFromApp(permissions.BasePermission):
+    def has_permission(self, request, view, obj=None):
+        if request.method in SAFE_METHODS:
+            return True
+        apptoken = request.META.get('HTTP_APP_ID')
+        if apptoken is None:
+            return False
+        try:
+            pass
+            #     enable this
+            #     App.objects.get(token=apptoken,owner=request.user)
+            return True
+        except Exception as e:
             return False

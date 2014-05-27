@@ -52,3 +52,11 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
+settings_production.py
+db.sqlite3
+*.sqlite3
+*/migrations/*
+api/migrations
+settings_production.py
+tracefile
+
