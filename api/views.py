@@ -102,8 +102,6 @@ class TaskView(viewsets.ModelViewSet):
         # init values
         user = self.request.user
         obj.owner = user
-        if obj.uuid is None:
-            obj.uuid = str(uuid4()).replace("-", "")
 
     # used to filter out based on the url
     def get_queryset(self):

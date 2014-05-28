@@ -1,108 +1,440 @@
-# CroCo API
 
-
+FORMAT: 1A
+# CrowdComputer (CroCo) API
+This is the ***Crowdcomputer API***. This API provides and easy way to crowdsourcer your application.
 Building the future of Crowdsourcing API: crowdsourcing as a service
 
-## API Documentation
+[Crowdcomputer](www.crowdcomputer.org) is created at the University of Trento, Italy by [Stefano](www.stefanotranquillini.me) and [Pavel](www.kucherbaev.com).
 
-### Authentication
-The APIs are build with *token* authentication.
-In order to retrive your token, you have to:
-- create the user: **User are created manually for the time being.**
-- `POST` to `api-token-auth/` passing `username` and `password`
+#Group Task
+## Task [/task/]
 
-EXAMPLE:
-```
-curl -H "Content-Type: application/json" -d '{"username":"Stefano","password":"stefano"}' localhost:8000/api-token-auth/
+### Retrive the list of task [GET]
+This method returns the list of tasks that are created by that specific application
 
-{"token": "8babeaea2a837621327606970f0f16c7c4fbf0d8"}
-```
++ Request (text/plain)
+    + Headers
 
-token must be used in the header of ALL the other calls, using  `Authorization: Token <Your Token>`
+            Authorization: Token 1
 
-###TASK
-Task api allows one to:
-- See the list of all his tasks
-- Create/Read/Update/Delete (CRUD) a task
-- Start/Stop a task 
-- See the list of all the instances of a task
-- Create/Read/Update/Delete (CRUD) a taskInstance
-- Assign a taskInstance to a User
-- Update the results of a taskIntance (execute the instance) 
++ Response 201 (application/json)
 
-####List
-`GET` to `task/`
-```
-curl -H "Authorization: Token 8babeaea2a837621327606970f0f16c7c4fbf0d8"  localhost:8000/task/
+    + Body
+
+            [
+                {
+                    "owner": "stefano", 
+                    "id": 1, 
+                    "title": "Task 1", 
+                    "description": "Desc Task 1", 
+                    "date_created": "2014-05-01T14:34:21.701", 
+                    "date_deadline": "2014-05-05T12:00:00Z", 
+                    "status": "ST", 
+                    "uuid": "52ed354a896a4ca38edd3946d58d7b06", 
+                    "page_url": "http://www.crowdcomputer.com/testpage.html",
+                    "reward" : 1.0
+                }, 
+                {
+                    "owner": "stefano", 
+                    "id": 3, 
+                    "title": "Task 2",
+                    "description": "task 2", 
+                    "date_created": "2014-05-01T20:08:40.446", 
+                    "date_deadline": "2014-05-05T12:00:00Z", 
+                    "status": "ST", 
+                    "uuid": "df78d71867de49029163aca10bf534de", 
+                    "page_url": "http://www.crowdcomputer.com/testpage.html",
+                    "reward" : 1.0
+                }
+            ]
+
+### Create a task [POST]
+This creates a task. ***Page URL*** must be an external webpage prepared following the instructions (NOT YET ONLINE). ***reward*** has to be specified in EUR.
+
++ Request JSON message
+    + Headers
+
+            Authorization:Token 1
+
+    + Body
+        
+            {
+                "title" : "Task title",
+                "description" : "Task Description",
+                "date_deadline" : "2014-05-05T12:00:00Z",
+                "page_url":"http://www.crowdcomputer.org/testme.html",
+                "reward": 0.5
+            }
+
++ Response 201 (application/json)
+
+    + Body
+
+            {
+                "owner": "stefano", 
+                "id": 4, 
+                "title": "Task title",
+                "description": "Task Description", 
+                "date_created": "2014-05-02T21:08:40.446", 
+                "date_deadline": "2014-05-05T12:00:00Z", 
+                "status": "ST", 
+                "uuid": "feed552cd3174a49a4d1324e2cc53de8", 
+                "page_url": "http://www.crowdcomputer.com/testme.html",
+                "reward" : 0.5
+            }
+
+## Task Detail [/task/{id}/]
+
++ Parameters
+    
+    + id (required, number) ... The id of the task.
+
+### Get a task [GET]
+This updates a task.
+
++ Request JSON message
+    + Headers
+
+            Authorization:Token 1
+
+    + Body
+        
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "owner": "stefano", 
+                "id": 4, 
+                "title": "Task title edited",
+                "description": "Task Description", 
+                "date_created": "2014-05-02T21:08:40.446", 
+                "date_deadline": "2014-05-05T12:00:00Z", 
+                "status": "ST", 
+                "uuid": "feed552cd3174a49a4d1324e2cc53de8", 
+                "page_url": "http://www.crowdcomputer.com/testme.html",
+                "reward" : 0.5
+            }
 
 
-[{"owner": "stefano", "id": 1, "title": "edited", "description": "descaaa", "date_created": "14:34:21.701", "date_deadline": "2014-05-05T12:00:00Z", "status": "ST", "uuid": "52ed354a896a4ca38edd3946d58d7b06", "page_url": "http://example.com"}, {"owner": "stefano", "id": 3, "title": "2", "description": "2", "date_created": "20:08:40.446", "date_deadline": "2014-05-05T12:00:00Z", "status": "ST", "uuid": "", "page_url": "http://test.com"}
-```
+### Update a task [PUT]
+This updates a task.
 
-####CREATE
-To **Create** `POST` to `task/` with following parameters:
-- `title`: the title of the task
-- `description`: the description of the task, what a worker has to do
-- `date_deadline`: when the task expires (format: `YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HHMM|-HHMM|Z]`)
-- `page_url`: the page that implements the task UI 
++ Request JSON message
+    + Headers
 
-```
-curl -H "Content-Type: application/json" -H "Authorization: Token 8babeaea2a837621327606970f0f16c7c4fbf0d8" -d '{"title":"title","description":"desc","date_deadline":"2014-06-06T12:00","page_url":"http://www.crowdcomputer.org"}' localhost:8000/task/
+            Authorization:Token 1
+
+    + Body
+        
+            {
+                "title" : "Task title edited",
+                "description" : "Task Description",
+                "date_deadline" : "2014-05-05T12:00:00Z",
+                "page_url":"http://www.crowdcomputer.org/testme.html",
+                "reward": 0.5
+            }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "owner": "stefano", 
+                "id": 4, 
+                "title": "Task title edited",
+                "description": "Task Description", 
+                "date_created": "2014-05-02T21:08:40.446", 
+                "date_deadline": "2014-05-05T12:00:00Z", 
+                "status": "ST", 
+                "uuid": "feed552cd3174a49a4d1324e2cc53de8", 
+                "page_url": "http://www.crowdcomputer.com/testme.html",
+                "reward" : 0.5
+            }
+
+### Delete a task [DELETE]
+This delete a task.
+
++ Request (*/*)
+    + Headers
+
+            Authorization:Token 1
+
+    + Body
+        
++ Response 204 (application/json)
+
+    + Body
+
+## Start a task [/task/{id}/start/] 
+This starts a task
+
++ Parameters
+    
+    + id (required, number) ... The id of the task.
+
+### Start [PUT]
+
++ Request (*/*)
+    + Headers
+
+            Authorization:Token 1
+
+    + Body
+        
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                'status':'PR'
+            }  
+
+## Stop a task [/task/{id}/stop/] 
+This stops a task
+
++ Parameters
+    
+    + id (required, number) ... The id of the task.
+
+### Stop [PUT]
+
++ Request (*/*)
+    + Headers
+
+            Authorization:Token 1
+
+    + Body
+        
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                'status':'ST'
+            }  
 
 
-{"owner": "stefano", "id": 4, "title": "title", "description": "desc", "date_created": "14:34:34.331", "date_deadline": "2014-06-06T12:00:00", "status": "ST", "uuid": "", "page_url": "http://www.crowdcomputer.org"}
-```
-####READ
-To **Read** `GET` to `task/<ID>/`
-####UPDATE
-To **Update** `PUT` to `task/<ID>/` with paramters as the creation
-####DELETE
-TO **Delete** `DELETE` to `task/<ID>/`
+#Group TaskInstance
+## Task [/task/{id}/taskinstance]
 
-####START
-To **Start** `POST` to `task/<ID>/start/`
-####STOP
-To **Stop** `POST` to `task/<ID>/stop/`
++ Parameters
+    
+    + id (required, number) ... The id of the task.
 
-####LIST OF INSTANCES
-To **get the list** `GET` to `task/<ID>/intance/`
+### Retrive the list of taskinstance of a task [GET]
+This method returns the list of the task instances of the task identified with `id`
 
-####CREATE INSTANCE
-To **Create** `POST` to `task/<ID>/instance/` with following parameters:
-- `input`: the JSON that is the input of the instance
++ Request (text/plain)
+    + Headers
 
-```
-curl -H "Content-Type: application/json" -H "Authorization: Token 8babeaea2a837621327606970f0f16c7c4fbf0d8" -d '{"input":{"title":"title","description":"desc","date_deadline":"2014-06-06T12:00","page_url":"http://www.crowdcomputer.org"}}' localhost:8000/task/1/instance/
+            Authorization: Token 1
 
-{"executor": null, "task": "edited", "owner": "stefano", "input_data": {"page_url": "http://www.crowdcomputer.org", "description": "desc", "date_deadline": "2014-06-06T12:00", "title": "title"}, "output_data": null, "id": 24, "status": "ST", "date_created": "2014-05-21T15:05:09.209Z", "date_started": null, "date_finished": null, "uuid": "3523f417c4994650b2865279febd079a", "parameters": "{}"}
-```
-####READ INSTANCE
-To **Read** `GET` to `task/<ID_TASK>/instance/<ID>/`
-####UPDATE INSTANCE
-To **Update** `PUT` to `task/<ID_TASK>/instance/<ID>/` with paramters as the creation
-####DELETE INSTANCE
-TO **Delete** `DELETE` to `task/<ID_TASK>/instance/<ID>/`
++ Response 201 (application/json)
 
-####START INSTANCE
-To **Start** `POST` to `task/<ID_TASK>/instance/<ID>/start/`
-####STOP INSTANCE
-To **Stop** `POST` to `task/<ID_TASK>/instance/<ID>/stop/`
-####ASSIGN INSTANCE
-To **assign a user to an instance** `POST` to `task/<ID_TASK>/instance/<ID>/assign/` with following parameters: 
-- `worker`: the `id` of the worker
+    + Body
 
-```
-curl -H "Content-Type: application/json" -H "Authorization: Token 8babeaea2a837621327606970f0f16c7c4fbf0d8" -d '{"worker":1}' localhost:8000/task/1/instance/1/assign/
+            [
+               ...
+            ]
 
-{"executor": "stefano", "task": "123", "owner": "b", "input_data": null, "output_data": null, "id": 1, "status": "ST", "date_created": "2014-05-05T16:13:33.782Z", "date_started": null, "date_finished": null, "uuid": "1312321312", "parameters": "{}"}
-```
-**executor** is assigned
-####EXECUTE INSTANCE
-To **store the results of an instance** `POST` to `task/<ID_TASK>/instance/<ID>/execute/`  with following parameters: 
-- `restult`: the json of the result data
+### Create a taskInstance [POST]
+This creates a task instance. ***input*** is the input data for that specific instnace.
+This functions checks if the balamnce of the workers is enough to pay this instance.
 
-```
-curl -H "Content-Type: application/json" -H "Authorization: Token 8babeaea2a837621327606970f0f16c7c4fbf0d8" -d '{"result":{"v1":"this is the result"}}' localhost:8000/task/1/instance/1/execute/
++ Request JSON message
+    + Headers
 
-{"executor": "stefano", "task": "123", "owner": "b", "input_data": null, "output_data": {"v1": "this is the result"}, "id": 1, "status": "ST", "date_created": "2014-05-05T16:13:33.782Z", "date_started": null, "date_finished": null, "uuid": "1312321312", "parameters": "\"\\\"\\\"\""}
+            Authorization:Token 1
+
+    + Body
+        
+            {
+                "input" : {} //optional, must be a json
+            }
+
++ Response 201 (application/json)
+
+    + Body
+
+            {
+                ...
+            }
+
+## TaskInstance Detail [/task/{id}/taskinstance/{id_instance}/]
+
++ Parameters
+    
+    + id (required, number) ... The id of the task.
+    + id_instance (required, number) ... The id of the task instance.
+
+### Get a task instnace [GET]
+This returns the details of  a task instance.
+
++ Request JSON message
+    + Headers
+
+            Authorization:Token 1
+
+    + Body
+        
++ Response 200 (application/json)
+
+    + Body
+
+            {
+            ...
+            }
+
+### Update a task instance [PUT]
+This updates a task instance.
+
++ Request JSON message
+    + Headers
+
+            Authorization:Token 1
+
+    + Body
+        
+            {
+              ...
+            }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+               ...
+            }
+
+### Delete a task instance [DELETE]
+This delete a task.
+
++ Request (*/*)
+    + Headers
+
+            Authorization:Token 1
+
+    + Body
+        
++ Response 204 (application/json)
+
+    + Body
+
+## Start a task instance [/task/{id}/taskinstance/{id_instance}/start/] 
+This starts a task
+
++ Parameters
+    
+    + id (required, number) ... The id of the task.
+    + id_instance (required, number) ... The id of the task instance.
+
+
+### Start [POST]
+
++ Request (*/*)
+    + Headers
+
+            Authorization:Token 1
+
+    + Body
+        
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                'status':'PR'
+            }  
+
+## Stop a task instance [/task/{id}/taskinstance/{id_instance}/stop/] 
+This stops a task
+
++ Parameters
+    
+    + id (required, number) ... The id of the task.
+    + id_instance (required, number) ... The id of the task instance.
+
+
+### Stop [POST]
+
++ Request (*/*)
+    + Headers
+
+            Authorization:Token 1
+
+    + Body
+        
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                'status':'ST'
+            }  
+
+## Assign a task instance to a worker [/task/{id}/taskinstance/{id_instance}/assign/] 
+This assign the task instance to a worker
+
++ Parameters
+    
+    + id (required, number) ... The id of the task.
+    + id_instance (required, number) ... The id of the task instance.
+
+
+### Assign [POST]
+
++ Request (*/*)
+    + Headers
+
+            Authorization:Token 1
+
+    + Body
+    
+            {
+                'worker': 1 //id of the worker
+
+            }
+        
++ Response 200 (application/json)
+
+    + Body
+
+            {
+               ...
+            }  
+
+## Execute a task instance, thus update the task instance metadata [/task/{id}/taskinstance/{id_instance}/execute/] 
+This updates the task instance metadata.
+
++ Parameters
+    
+    + id (required, number) ... The id of the task.
+    + id_instance (required, number) ... The id of the task instance.
+
+
+### Assign [POST]
+
++ Request (*/*)
+    + Headers
+
+            Authorization:Token 1
+
+    + Body
+
+            {
+                'result': {} //a json object
+
+            }
+        
++ Response 200 (application/json)
+
+    + Body
+
+            {
+               ...
+            }  
+
+
 

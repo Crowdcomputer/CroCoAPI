@@ -60,3 +60,4 @@ api/migrations
 settings_production.py
 tracefile
 
+readme.backup

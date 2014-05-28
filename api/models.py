@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 import os
 import binascii
+from uuid import uuid4
 
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator
@@ -54,7 +55,7 @@ class Task(models.Model):
     # process = models.ForeignKey(Process)
     title = models.CharField(max_length=200, default='')
     description = models.CharField(max_length=1000, default='')
-    date_created = models.TimeField(auto_now_add=True, auto_now=False)
+    date_created = models.DateTimeField(auto_now_add=True, auto_now=False)
     date_deadline = models.DateTimeField(default=lambda: (datetime.now() + timedelta(days=7)), auto_now_add=False)
     # parameters = jsonfield.JSONField(blank=True)
     # objects = InheritanceManager()
@@ -65,6 +66,11 @@ class Task(models.Model):
 
     def __unicode__(self):
         return '[' + str(self.id) + '] ' + str(self.title)
+
+    def save(self, *args, **kwargs):
+        if not self.uuid:
+            self.uuid = str(uuid4()).replace("-", "")
+        return super(Task, self).save(*args, **kwargs)
 
     def start(self):
         self.status = "PR"
@@ -140,7 +146,7 @@ STATUS_CHOICES = (('ST', 'Stopped'), ('PR', 'Process'), ('FN', 'Finished'), ('VL
 
 class TaskInstance(models.Model):
     # executor
-    executor = models.ForeignKey(User, null=True, blank=True)
+    executor = models.  ForeignKey(User, null=True, blank=True)
     # mto1: many Responses generated for one task
     task = models.ForeignKey(Task)
     status = models.CharField(max_length=2, choices=STATUS_CHOICES, default='ST')
@@ -155,6 +161,11 @@ class TaskInstance(models.Model):
 
     def __unicode__(self):
         return '[' + str(self.id) + '] '
+
+    def save(self, *args, **kwargs):
+        if not self.uuid:
+            self.uuid = str(uuid4()).replace("-", "")
+        return super(TaskInstance, self).save(*args, **kwargs)
 
     def start(self):
         self.status = "PR"
