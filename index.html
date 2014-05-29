@@ -112,14 +112,20 @@
         <div>
           <div class="container">
             <div class="row v-center">
+              <div class="col-ml-12">
+                <h1>Proudly made in Trento by</h1>
+              </div>
+            </div>
+            <div class="row v-center">
+
               <div class="col-ml-6">
                 <div>
-                  <a href='http://stefanotranquillini.me' target='_blank'> <img src='http://disi.unitn.it/~tranquillini/dark_site/static/img/io.png' class='img-circle avatar' width="300px"> <h5>Stefano Tranquillini</h5> </a>
+                  <a href='http://stefanotranquillini.me' target='_blank'> <img src='img/stefano.png' class='img-circle avatar' width="300px"> <h5>Stefano Tranquillini</h5> </a>
                 </div>
               </div>
               <div class="col-ml-6">
                <!--  <div class="col-sm-offset-5"> -->
-                  <a href='http://kucherbaev.com' target='_blank'> <img src='http://kucherbaev.com/view/static/img/picture/photo.jpeg' class='img-circle avatar' width="300px"> <h5>Pavel Kucherbaev</h5> </a>
+                  <a href='http://kucherbaev.com' target='_blank'> <img src='img/pavel.jpg' class='img-circle avatar' width="300px"> <h5>Pavel Kucherbaev</h5> </a>
 
                 <!-- </div> -->
               </div>
@@ -141,7 +147,7 @@
             <div class="col-sm-3">
               <h6>University of Trento</h6>
               <div class="address">
-                Via sommarive 5
+                Via sommarive 9
                 <br>Povo, TN, Italy, 38123
               </div>
             </div>
@@ -161,12 +167,12 @@
     <script src="common-files/js/jquery.svg.js"></script>
     <script src="common-files/js/jquery.svganim.js"></script>
     <script src="common-files/js/startup-kit.js"></script> 
-    <script type="text/javascript">
-    $(window).resize(function() {
-        if (!el.hasClass('ani-processed')) {
-            el.eq(0).data('scrollPos', el.eq(0).offset().top - $(window).height() + shift);
-        }
-    });
+     <script type="text/javascript">
+      $(window).resize(function() {
+            var sH = $(window).height();
+            $('section.header-10-sub').css('height', (sH - $('header').outerHeight()) + 'px');
+            $('section:not(.header-10-sub):not(.content-11)').css('height', sH + 'px');
+        });       
     </script> 
   </body>
 </html>
