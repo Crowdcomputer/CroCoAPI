@@ -20,11 +20,11 @@ class IsOwner(permissions.BasePermission):
         elif hasattr(obj, 'task'):
             # log.debug('is an instance')
             # log.debug("%s %s" % (obj.task.owner, request.user))
-            return obj.task.owner == request.user
+            return obj.task.owner == request.user and obj.task.app == request.app
         #if it's a task check ownership
         elif hasattr(obj, 'owner'):
             # log.debug('is a task')
-            return obj.owner == request.user
+            return obj.owner == request.user and obj.app == request.app
         else:
             log.debug('is smt else')
             return False

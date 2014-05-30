@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block pagetitle %} Login {% endblock %}
+{% load crispy_forms_tags %}
+{% block container %}
+
+<div class="row center">
+	<h4 class="lead">Please login</h4>
+	<hr>
+	<div class="col-md-12 center">
+    	{% crispy form %}
+    	<br /> 
+{#    	<h4><a href="{% url 'register' %}">need a login?</a></h4>#}
+	</div>
+</div>
+	
+{% endblock %}
+

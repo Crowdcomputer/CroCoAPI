@@ -1,9 +1,15 @@
 # Create your views here.
 import logging
 from uuid import uuid4
+from django.contrib import messages
+from django.contrib.auth import authenticate
 
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.db import transaction
+from django.http.response import HttpResponseRedirect, Http404
+from django.shortcuts import redirect, render_to_response
+from django.template.context import RequestContext
 from rest_framework import viewsets, status, parsers, renderers
 
 
@@ -13,13 +19,16 @@ from rest_framework import viewsets, status, parsers, renderers
 
 
 # ViewSets define the view behavior.
+from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action, api_view, permission_classes, link
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import exceptions
 from rest_framework.views import APIView
 from api.exceptions import NotEnoughMoney
-from api.models import Task, TaskInstance, Data, CrowdUser
+from api.forms import LoginForm
+from api.models import Task, TaskInstance, Data, CrowdUser, App
+from api.permissions import IsOwner
 from api.serializers import  TaskInstanceSerializer, CrowdUserSerializer, TaskSerializer
 
 from rest_framework_nested import routers
@@ -27,12 +36,12 @@ from rest_framework_nested import routers
 log = logging.getLogger(__name__)
 
 
-def get_task(pk, user):
-    return get_object_or_404(Task, pk=pk, owner=user)
+def get_task(pk, user, app):
+    return get_object_or_404(Task, pk=pk, owner=user, app=app)
 
 
-def get_instance(pk_task, pk_instance, user):
-    task = get_task(pk_task, user)
+def get_instance(pk_task, pk_instance, user, app):
+    task = get_task(pk_task, user, app)
     return get_object_or_404(TaskInstance, pk=pk_instance)
 
 
@@ -102,14 +111,15 @@ class TaskView(viewsets.ModelViewSet):
         # init values
         user = self.request.user
         obj.owner = user
+        obj.app = self.request.app
 
     # used to filter out based on the url
     def get_queryset(self):
-        return Task.objects.filter(owner=self.request.user)
+        return Task.objects.filter(owner=self.request.user,app=self.request.app)
 
     @action()
     def start(self, request, pk=None):
-        task = get_task(pk, request.user)
+        task = get_task(pk, request.user, request.app)
         task.start()
         res = {}
         res['status'] = task.status
@@ -117,7 +127,7 @@ class TaskView(viewsets.ModelViewSet):
 
     @action()
     def stop(self, request, pk=None):
-        task = get_task(pk, request.user)
+        task = get_task(pk, request.user, request.app)
         task.stop()
         res = {}
         res['status'] = task.status
@@ -182,7 +192,7 @@ class InstanceView(viewsets.ModelViewSet):
 
     @action()
     def start(self, request, pk=None, task_pk=None):
-        task_instance = get_instance(task_pk, pk, request.user)
+        task_instance = get_instance(task_pk, pk, request.user, request.app)
         task_instance.start()
         res = {}
         res['status'] = task_instance.status
@@ -190,7 +200,7 @@ class InstanceView(viewsets.ModelViewSet):
 
     @action()
     def stop(self, request, pk=None, task_pk=None):
-        task_instance = get_instance(task_pk, pk, request.user)
+        task_instance = get_instance(task_pk, pk, request.user, request.app)
         task_instance.stop()
         res = {}
         res['status'] = task_instance.status
@@ -198,7 +208,7 @@ class InstanceView(viewsets.ModelViewSet):
 
     @action()
     def assign(self, request, pk=None, task_pk=None, worker=None):
-        task_instance = get_instance(task_pk, pk, request.user)
+        task_instance = get_instance(task_pk, pk, request.user, request.app)
         worker_id = self.request.DATA['worker'] if 'worker' in self.request.DATA else None
         if worker_id is None:
             raise exceptions.ParseError(detail="Worker ID is not specified")
@@ -208,6 +218,8 @@ class InstanceView(viewsets.ModelViewSet):
         return Response(TaskInstanceSerializer(task_instance).data)
 
     @action()
+    @permission_classes((IsOwner, ))
+    # TODO: check this if only IsOwner is called
     def execute(self, request, pk=None, task_pk=None):
         task_instance = get_instance_worker(pk, request.user)
 
@@ -227,7 +239,7 @@ class InstanceView(viewsets.ModelViewSet):
     @action()
     @transaction.atomic
     def reward_give(self, request, pk=None, task_pk=None):
-        task_instance = get_instance(task_pk, pk, request.user)
+        task_instance = get_instance(task_pk, pk, request.user, request.app)
         worker = task_instance.executor.crowduser
         crowdsourcer = request.user.crowduser
         crowdsourcer.balance = crowdsourcer.balance - task_instance.task.reward
@@ -240,7 +252,7 @@ class InstanceView(viewsets.ModelViewSet):
     @transaction.atomic
     def reward_reject(self, request, pk=None, task_pk=None):
         #TODO: implement the logic
-        task_instance = get_instance(task_pk, pk, request.user)
+        task_instance = get_instance(task_pk, pk, request.user, request.app)
         resp={}
         resp["details"]="Reward of " +  str(task_instance.task.reward ) + " rejected"
         return Response(resp)
@@ -249,7 +261,7 @@ class InstanceView(viewsets.ModelViewSet):
     def quality_set(self, request, pk=None, task_pk=None):
         if 'value' not in request.DATA:
             raise exceptions.ParseError(detail="'value' not found")
-        task_instance = get_instance(task_pk, pk, request.user)
+        task_instance = get_instance(task_pk, pk, request.user, request.app)
         value = int(request.DATA['value'])
 
         if (value>=0 and value <=100):
@@ -262,7 +274,7 @@ class InstanceView(viewsets.ModelViewSet):
             raise exceptions.ParseError(detail="choose a value between 0 and 100")
     @link()
     def quality_get(self, request, pk=None, task_pk=None):
-        task_instance = get_instance(task_pk, pk, request.user)
+        task_instance = get_instance(task_pk, pk, request.user, request.app)
         resp={}
         resp["value"]=task_instance.quality
         return Response(resp)
@@ -273,7 +285,73 @@ router.register(r'task', TaskView)
 task_router = routers.NestedSimpleRouter(router, r'task', lookup='task')
 task_router.register(r'instance', InstanceView)
 
+# views
 
+def login(request):
+    # if request.user.is_authenticated():
+    #     return redirect('/')
+    callback = request.GET.get('callback', '')
+    if not callback.endswith("/"):
+        callback=callback+"/"
+    log.debug("callback %s",callback)
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                auth_app = user.crowduser.auth_apps.all()
+                app = App.objects.get(callback=callback)
+                token = Token.objects.get(user=user)
+
+                if app not in auth_app:
+                    log.debug("not in app")
+                    return redirect(reverse(auth)+"?callback="+callback+"&token="+token.key)
+                else:
+                    log.debug("in app")
+                # log.debug("Username %s",user.username)
+                # get the app
+                # apptoken = request.META.get('HTTP_AUTHORIZATION', b'')
+                callback = request.GET.get('callback', '')
+                if type(callback) == type(''):
+                    raise Http404
+                token = Token.objects.get(user=user)
+                redirect_to = callback+"?token="+token.key
+                return HttpResponseRedirect(redirect_to)
+            else:
+                messages.info(request,'username and password not valid')
+
+
+                form.helper.form_action = reverse('login') + '?callback=' + callback
+                render_to_response('login.html',  {'form': form}, context_instance=RequestContext(request))
+        else:
+            form.helper.form_action = reverse('login') + '?callback=' + callback
+
+            render_to_response('login.html', {'form': form}, context_instance=RequestContext(request))
+    else:
+        form = LoginForm()
+        form.helper.form_action = reverse('login') + '?callback=' + callback
+        # context = {'form': form,'callback':callback}
+        # context = {}
+        return render_to_response('login.html',  {'form': form}, context_instance=RequestContext(request))
+
+def auth(request):
+    callback = request.GET.get('callback', '')
+    token = request.GET.get('token', '')
+    if not callback.endswith("/"):
+        callback=callback+"/"
+    if request.method == 'POST':
+        token = Token.objects.get(key=token)
+        app = App.objects.get(callback=callback)
+        crowduser = token.user.crowduser
+        crowduser.auth_apps.add(app)
+        crowduser.save()
+        redirect_to = callback+"?token="+token.key
+        return HttpResponseRedirect(redirect_to)
+    else:
+        app = App.objects.get(callback=callback)
+        return render_to_response('app.html',  {'app': app,'callback':callback,'token':token}, context_instance=RequestContext(request))
 
 # router.register(r'instance', TaskView)
 

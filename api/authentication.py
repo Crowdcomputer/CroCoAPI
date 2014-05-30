@@ -3,18 +3,18 @@ from __future__ import unicode_literals
 from rest_framework import exceptions
 from rest_framework.authentication import get_authorization_header, BaseAuthentication
 from rest_framework.authtoken.models import Token
-from api.models import App
+from api.models import App, CrowdUser
 
 __author__ = 'stefano'
 class TokenAppAuthentication(BaseAuthentication):
     """
         App token authentication, modified from TokenBase Authentication
 
-        Authorization: Token 401f7ac837da42b97f613d789819ff93537bee6a
+        Authorization: Token 401f7ac837da42b97f613d789819ff93537bee6a/812cf2548f624b93d18e57820a0153accb03da2b
 
-        Now the token is of the application, rather than of the user.
-        Each user can have more than one application,
-        with the app token here you get the owner and corresponding application
+        it's apptoken/usertoken
+
+        user must have authorized the app to act on his behalf.
     """
 
     model = App
@@ -25,7 +25,7 @@ class TokenAppAuthentication(BaseAuthentication):
 
     def authenticate(self, request):
         auth = get_authorization_header(request).split()
-
+        # print auth
         if not auth or auth[0].lower() != b'token':
             return None
 
@@ -40,19 +40,36 @@ class TokenAppAuthentication(BaseAuthentication):
         return self.authenticate_credentials(auth[1], request)
 
     def authenticate_credentials(self, key,request):
+        # token is apptoken/usertoken
+        # print key
+        if "/" in key:
+            apptoken,usertoken = key.split("/")
+        else:
+            apptoken = key
+
         try:
             # get the app via key
-            app = self.model.objects.get(token=key)
-            # get the token via the app owner, which is a user
-            token = Token.objects.get(user=app.owner)
+            app = self.model.objects.get(token=apptoken)
+            #if user is specified get the one from the key
+            if usertoken:
+                # before we have to check if user has granted the access for this app
+                token = Token.objects.get(key=usertoken)
+                # check if user has granted access for this app.
+                auth_app = token.user.crowduser.auth_apps.all()
+                if app not in auth_app:
+                    raise exceptions.AuthenticationFailed('User has not granted access for this app')
+
+            else:
+            # else get the token via the app owner, which is a user
+                token = Token.objects.get(user=app.owner)
+
         except self.model.DoesNotExist:
-            raise exceptions.AuthenticationFailed('Invalid token')
+            raise exceptions.AuthenticationFailed('Invalid token for app')
         # not sure this is correct
         except Token.DoesNotExist:
-            raise exceptions.AuthenticationFailed('Invalid token')
+            raise exceptions.AuthenticationFailed('Invalid token for user')
         # just in case,
-        except Exception:
-            raise exceptions.AuthenticationFailed('Not known')
+
 
         if not app.owner.is_active:
             raise exceptions.AuthenticationFailed('User inactive or deleted')

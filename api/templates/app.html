@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block pagetitle %} Login {% endblock %}
+{% load crispy_forms_tags %}
+{% block container %}
+
+<form action="{% url 'auth' %}?callback={{ callback }}&token={{ token }}" method="post">
+{% csrf_token %}
+    <p>
+        would you like to grant {{ app.name }} of {{ app.owner.username }} ?
+    </p>
+<input type="submit" value="Authorize">
+</form>
+<form action="{{ app.callback }}" method="get">
+<input type="submit" value="No">
+</form>
+{% endblock %}
+

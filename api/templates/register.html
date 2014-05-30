@@ -1,0 +1,13 @@
+{% extends 'general/base.html' %}
+{% block pagetitle %} Register {% endblock %}
+{% block container %}
+<h1>Register</h1>
+<form action="" method="post" class="form-horizontal">
+    {% csrf_token %}
+       {{ form }}
+       <div class="form-actions">
+               <button type="submit" class="btn btn-primary">Login</button>
+           </div>
+</form>
+
+{% endblock %}

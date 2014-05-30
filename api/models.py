@@ -14,11 +14,13 @@ from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 
 
+
 # Create your models here.
 class App(models.Model):
     owner = models.ForeignKey(User)
     token = models.CharField(max_length=40, primary_key=True)
     name = models.CharField(max_length=100, default="-")
+    callback = models.URLField(unique=True)
 
     def save(self, *args, **kwargs):
         if not self.token:
@@ -26,7 +28,8 @@ class App(models.Model):
         return super(App, self).save(*args, **kwargs)
 
     def __unicode__(self):
-        return '[' + str(self.owner.username) + '] ' + str(self.name)
+        return '' + str(self.owner.username) + ' - ' + str(self.name)
+
 
 class Data(models.Model):
     value = JSONField()
@@ -44,10 +47,14 @@ class Data(models.Model):
 
 STATUS_CHOISES = (('PR', 'In process'), ('ST', 'Stopped'), ('FN', 'Finished'), ('DL', 'Deleted'),)
 
+
 class CrowdUser(models.Model):
     user = models.OneToOneField(User)
     balance = models.DecimalField(decimal_places=2, max_digits=8, default=Decimal('0.0'))
+    auth_apps = models.ManyToManyField(App, blank=True, related_name="auth_users")
 
+    def __unicode__(self):
+        return '' + str(self.user.username)
 
 
 class Task(models.Model):
@@ -63,6 +70,7 @@ class Task(models.Model):
     page_url = models.URLField(max_length=400, default='', null=True, blank=True)
     reward = models.DecimalField(decimal_places=2, max_digits=8, default=Decimal('0.0'), blank=True, null=True)
     status = models.CharField(max_length=2, choices=STATUS_CHOISES, default='ST', blank=True)
+    app = models.ForeignKey(App,null=True)
 
     def __unicode__(self):
         return '[' + str(self.id) + '] ' + str(self.title)
@@ -131,8 +139,8 @@ class Task(models.Model):
         #     self.save()
 
 
-# PLATFORMS = (('CC', 'CrowdComputer'), ('MT', 'Amazon Mechanical Turk'),)
-# class HumanTask(Task):
+    # PLATFORMS = (('CC', 'CrowdComputer'), ('MT', 'Amazon Mechanical Turk'),)
+    # class HumanTask(Task):
     # is_unique = models.BooleanField(default=True)
     # number_of_instances = models.IntegerField(default=1)
 
@@ -146,7 +154,7 @@ STATUS_CHOICES = (('ST', 'Stopped'), ('PR', 'Process'), ('FN', 'Finished'), ('VL
 
 class TaskInstance(models.Model):
     # executor
-    executor = models.  ForeignKey(User, null=True, blank=True)
+    executor = models.ForeignKey(User, null=True, blank=True)
     # mto1: many Responses generated for one task
     task = models.ForeignKey(Task)
     status = models.CharField(max_length=2, choices=STATUS_CHOICES, default='ST')

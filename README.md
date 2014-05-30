@@ -6,6 +6,33 @@ Building the future of Crowdsourcing API: crowdsourcing as a service
 
 [Crowdcomputer](www.crowdcomputer.org) is created at the University of Trento, Italy by [Stefano](www.stefanotranquillini.me) and [Pavel](www.kucherbaev.com).
 
+#Authorization
+The api are protected by a  *token* authentication. The token identifies the *user* and the *application*. It is composed of two parts, seprated by a `/`
+- apptoken
+- usertoken
+
+```
+    e4f4fb816c42b3ff34cc8eb46654a75478fb74c9/38ce17d422f52a3e3eb88a71c5a547a3e156973c
+```
+
+To be able to use the API you have to create an application (*URL NOT AVAILABLE YET*), which will automatically create an application token for you.
+The application token identifies your app, thus all the request made with that token will identifiy your application, for example: the list of task of a user is only the list of tasks of that user created with that application.
+
+The user token is given back to you app when a user logs in. To login a user, call this webpage (`../login?callback=<your callback url>`). Once the user logs in the page will redirect to the `callback` page you specified when u created your application.
+*Be sure that the `callback` that you specified when you created the app, and the one that you use as parameter of `/login` are the same.*
+
+NB: The user has to grant access to the app before the app can act on his behalf. This will be managed by our login pages.
+
+User token will be appended to the url.
+
+Example:
+
+- `../login?callback=http://test.com`
+- users logs in
+- app is granted by the user
+- systems redirect to `http://test.com?token=38ce17d422f52a3e3eb88a71c5a547a3e156973c`
+
+
 #Group Task
 ## Task [/task/]
 
@@ -414,7 +441,7 @@ This updates the task instance metadata.
     + id_instance (required, number) ... The id of the task instance.
 
 
-### Assign [POST]
+### Execute [POST]
 
 + Request (*/*)
     + Headers
