@@ -7,7 +7,22 @@ Building the future of Crowdsourcing API: crowdsourcing as a service
 [Crowdcomputer](www.crowdcomputer.org) is created at the University of Trento, Italy by [Stefano](www.stefanotranquillini.me) and [Pavel](www.kucherbaev.com).
 
 #Authorization
-The api are protected by a  *token* authentication. The token identifies the *user* and the *application*. It is composed of two parts, seprated by a `/`
+The api are protected by a  *token* authentication. The platform accept two types of tokens that are meant to be used in two scnearios. The *single-requester-app* that should be used when the requester is the same person as the owner of the app, and *multiple-requesters-app* that is for applications that post tasks on behalf of other requesters.
+
+##Single-requester-app
+The token identifies the *application*.
+Example:
+```
+    e4f4fb816c42b3ff34cc8eb46654a75478fb74c9
+```
+
+When a task is created with this token the requester becomes the owner of the application. 
+There's no need to ask users to login (except for workers, they must be logged in in the platform)
+
+##Multiple-requesters-app
+In this case the app can post task on behalf or other users.  Users (requesters) have to be logged in in the system (see the rest of this paragraph for clarification).
+
+The token identifies the *user* and the *application*. It is composed of two parts, seprated by a `/`
 - apptoken
 - usertoken
 
@@ -15,6 +30,8 @@ The api are protected by a  *token* authentication. The token identifies the *us
     e4f4fb816c42b3ff34cc8eb46654a75478fb74c9/38ce17d422f52a3e3eb88a71c5a547a3e156973c
 ```
 
+
+###App token, requester login and authorization
 To be able to use the API you have to create an application (*URL NOT AVAILABLE YET*), which will automatically create an application token for you.
 The application token identifies your app, thus all the request made with that token will identifiy your application, for example: the list of task of a user is only the list of tasks of that user created with that application.
 
@@ -32,6 +49,9 @@ Example:
 - app is granted by the user
 - systems redirect to `http://test.com?token=38ce17d422f52a3e3eb88a71c5a547a3e156973c`
 
+*this is used to log in the requesters*
+
+#API List
 
 #Group Task
 ## Task [/task/]
@@ -42,7 +62,7 @@ This method returns the list of tasks that are created by that specific applicat
 + Request (text/plain)
     + Headers
 
-            Authorization: Token 1
+            Authorization: Token X/Y
 
 + Response 201 (application/json)
 
@@ -81,7 +101,7 @@ This creates a task. ***Page URL*** must be an external webpage prepared followi
 + Request JSON message
     + Headers
 
-            Authorization:Token 1
+            Authorization:Token X/Y
 
     + Body
         
@@ -122,7 +142,7 @@ This updates a task.
 + Request JSON message
     + Headers
 
-            Authorization:Token 1
+            Authorization:Token X/Y
 
     + Body
         
@@ -150,7 +170,7 @@ This updates a task.
 + Request JSON message
     + Headers
 
-            Authorization:Token 1
+            Authorization:Token X/Y
 
     + Body
         
@@ -185,7 +205,7 @@ This delete a task.
 + Request (*/*)
     + Headers
 
-            Authorization:Token 1
+            Authorization:Token X/Y
 
     + Body
         
@@ -205,7 +225,7 @@ This starts a task
 + Request (*/*)
     + Headers
 
-            Authorization:Token 1
+            Authorization:Token X/Y
 
     + Body
         
@@ -229,7 +249,7 @@ This stops a task
 + Request (*/*)
     + Headers
 
-            Authorization:Token 1
+            Authorization:Token X/Y
 
     + Body
         
@@ -255,7 +275,7 @@ This method returns the list of the task instances of the task identified with `
 + Request (text/plain)
     + Headers
 
-            Authorization: Token 1
+            Authorization: Token X/Y
 
 + Response 201 (application/json)
 
@@ -272,7 +292,7 @@ This functions checks if the balamnce of the workers is enough to pay this insta
 + Request JSON message
     + Headers
 
-            Authorization:Token 1
+            Authorization:Token X/Y
 
     + Body
         
@@ -301,7 +321,7 @@ This returns the details of  a task instance.
 + Request JSON message
     + Headers
 
-            Authorization:Token 1
+            Authorization:Token X/Y
 
     + Body
         
@@ -319,7 +339,7 @@ This updates a task instance.
 + Request JSON message
     + Headers
 
-            Authorization:Token 1
+            Authorization:Token X/Y
 
     + Body
         
@@ -341,7 +361,7 @@ This delete a task.
 + Request (*/*)
     + Headers
 
-            Authorization:Token 1
+            Authorization:Token X/Y
 
     + Body
         
@@ -363,7 +383,7 @@ This starts a task
 + Request (*/*)
     + Headers
 
-            Authorization:Token 1
+            Authorization:Token X/Y
 
     + Body
         
@@ -389,7 +409,7 @@ This stops a task
 + Request (*/*)
     + Headers
 
-            Authorization:Token 1
+            Authorization:Token X/Y
 
     + Body
         
@@ -415,7 +435,7 @@ This assign the task instance to a worker
 + Request (*/*)
     + Headers
 
-            Authorization:Token 1
+            Authorization:Token X/Y
 
     + Body
     
@@ -446,7 +466,7 @@ This updates the task instance metadata.
 + Request (*/*)
     + Headers
 
-            Authorization:Token 1
+            Authorization:Token X/Y
 
     + Body
 

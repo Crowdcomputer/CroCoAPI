@@ -125,7 +125,7 @@
 			<script src="{% static "js/markdown.js" %}"></script>
 			<script>
 				// may be we can simplified- but now I don't know how to get the address of static in javascript
-				var static = "{% static "" %}";
+				var static = "{% static "base.html" %}";
 				$(document).ready(function() {
 					$('.tip').tooltip();
 				});

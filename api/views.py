@@ -1,16 +1,11 @@
 # Create your views here.
 import logging
 from uuid import uuid4
-from django.contrib import messages
-from django.contrib.auth import authenticate
 
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
 from django.db import transaction
-from django.http.response import HttpResponseRedirect, Http404
-from django.shortcuts import redirect, render_to_response
-from django.template.context import RequestContext
-from rest_framework import viewsets, status, parsers, renderers
+from rest_framework import viewsets, status
+
 
 
 
@@ -19,15 +14,13 @@ from rest_framework import viewsets, status, parsers, renderers
 
 
 # ViewSets define the view behavior.
-from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action, api_view, permission_classes, link
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework import exceptions
 from rest_framework.views import APIView
 from api.exceptions import NotEnoughMoney
-from api.forms import LoginForm
-from api.models import Task, TaskInstance, Data, CrowdUser, App
+from api.models import Task, TaskInstance, Data, CrowdUser
 from api.permissions import IsOwner
 from api.serializers import  TaskInstanceSerializer, CrowdUserSerializer, TaskSerializer
 
@@ -286,72 +279,6 @@ task_router = routers.NestedSimpleRouter(router, r'task', lookup='task')
 task_router.register(r'instance', InstanceView)
 
 # views
-
-def login(request):
-    # if request.user.is_authenticated():
-    #     return redirect('/')
-    callback = request.GET.get('callback', '')
-    if not callback.endswith("/"):
-        callback=callback+"/"
-    log.debug("callback %s",callback)
-    if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                auth_app = user.crowduser.auth_apps.all()
-                app = App.objects.get(callback=callback)
-                token = Token.objects.get(user=user)
-
-                if app not in auth_app:
-                    log.debug("not in app")
-                    return redirect(reverse(auth)+"?callback="+callback+"&token="+token.key)
-                else:
-                    log.debug("in app")
-                # log.debug("Username %s",user.username)
-                # get the app
-                # apptoken = request.META.get('HTTP_AUTHORIZATION', b'')
-                callback = request.GET.get('callback', '')
-                if type(callback) == type(''):
-                    raise Http404
-                token = Token.objects.get(user=user)
-                redirect_to = callback+"?token="+token.key
-                return HttpResponseRedirect(redirect_to)
-            else:
-                messages.info(request,'username and password not valid')
-
-
-                form.helper.form_action = reverse('login') + '?callback=' + callback
-                render_to_response('login.html',  {'form': form}, context_instance=RequestContext(request))
-        else:
-            form.helper.form_action = reverse('login') + '?callback=' + callback
-
-            render_to_response('login.html', {'form': form}, context_instance=RequestContext(request))
-    else:
-        form = LoginForm()
-        form.helper.form_action = reverse('login') + '?callback=' + callback
-        # context = {'form': form,'callback':callback}
-        # context = {}
-        return render_to_response('login.html',  {'form': form}, context_instance=RequestContext(request))
-
-def auth(request):
-    callback = request.GET.get('callback', '')
-    token = request.GET.get('token', '')
-    if not callback.endswith("/"):
-        callback=callback+"/"
-    if request.method == 'POST':
-        token = Token.objects.get(key=token)
-        app = App.objects.get(callback=callback)
-        crowduser = token.user.crowduser
-        crowduser.auth_apps.add(app)
-        crowduser.save()
-        redirect_to = callback+"?token="+token.key
-        return HttpResponseRedirect(redirect_to)
-    else:
-        app = App.objects.get(callback=callback)
-        return render_to_response('app.html',  {'app': app,'callback':callback,'token':token}, context_instance=RequestContext(request))
 
 # router.register(r'instance', TaskView)
 

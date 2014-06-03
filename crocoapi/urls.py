@@ -1,7 +1,8 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
-from api.views import router, task_router, TaskView, create_user, TestToken, login, auth
+from api.views import router, task_router, TaskView, create_user, TestToken
+from ui.views import login, auth
 
 
 admin.autodiscover()
