@@ -76,7 +76,7 @@ def auth(request):
         crowduser = token.user.crowduser
         crowduser.auth_apps.add(app)
         crowduser.save()
-        redirect_to = callback+"?token="+token.key
+        redirect_to = callback+"?token="+token.key+"&id="+crowduser.user.pk
         return HttpResponseRedirect(redirect_to)
     else:
         app = App.objects.get(callback=callback)

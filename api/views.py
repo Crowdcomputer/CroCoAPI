@@ -238,7 +238,7 @@ class InstanceView(viewsets.ModelViewSet):
         crowdsourcer.balance = crowdsourcer.balance - task_instance.task.reward
         worker.balance = worker.balance + task_instance.task.reward
         resp={}
-        resp["details"]="Reward of " + str(task_instance.task.reward ) + " is given"
+        resp["details"]="Reward of " + str(task_instance.task.reward) + " is given"
         return Response(resp)
 
     @action()

@@ -481,7 +481,115 @@ This updates the task instance metadata.
 
             {
                ...
-            }  
+            }
 
+## Give the reward to an worker of a task instance [/task/{id}/taskinstance/{id_instance}/reward_give/]
+This give the reward to the worker of the instance taking the money from the requester account.
 
++ Parameters
 
+    + id (required, number) ... The id of the task.
+    + id_instance (required, number) ... The id of the task instance.
+
+### Execute [POST]
+
++ Request (*/*)
+    + Headers
+
+            Authorization:Token X/Y
+
+    + Body
+
+            {}
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+               'details':  'Reward of ... given'
+            }
+
+## Reject the reward to an worker of a task instance [/task/{id}/taskinstance/{id_instance}/reward_reject/]
+This rejects the reward for a worker.
+
++ Parameters
+
+    + id (required, number) ... The id of the task.
+    + id_instance (required, number) ... The id of the task instance.
+
+### Execute [POST]
+
++ Request (*/*)
+    + Headers
+
+            Authorization:Token X/Y
+
+    + Body
+
+            {}
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+               'details':  'Reward of ... rejected'
+            }
+
+## Set the quality of a task instance [/task/{id}/taskinstance/{id_instance}/reward_reject/]
+This sets the quality of a task instance
+
++ Parameters
+
+    + id (required, number) ... The id of the task.
+    + id_instance (required, number) ... The id of the task instance.
+
+### Execute [POST]
+
++ Request (*/*)
+    + Headers
+
+            Authorization:Token X/Y
+
+    + Body
+
+            {
+                'value': 55 //number between 0 and 100
+            }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+               'details':  'Quality set'
+            }
+
+## Get the quality of a task instance [/task/{id}/taskinstance/{id_instance}/reward_reject/]
+This gets the quality of a task instance
+
++ Parameters
+
+    + id (required, number) ... The id of the task.
+    + id_instance (required, number) ... The id of the task instance.
+
+### Execute [POST]
+
++ Request (*/*)
+    + Headers
+
+            Authorization:Token X/Y
+
+    + Body
+
+            {
+            }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+               'value':  55
+            }
