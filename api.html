@@ -1,0 +1,342 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>CrowdComputer (CroCo) API</title><link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"><link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"><link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,700|Inconsolata|Raleway:200"><style>/* Highlight.js Theme Tomorrow */
+.hljs-comment,.hljs-title{color:#8e908c}.hljs-variable,.hljs-attribute,.hljs-tag,.hljs-regexp,.ruby .hljs-constant,.xml .hljs-tag .hljs-title,.xml .hljs-pi,.xml .hljs-doctype,.html .hljs-doctype,.css .hljs-id,.css .hljs-class,.css .hljs-pseudo{color:#c82829}.hljs-number,.hljs-preprocessor,.hljs-pragma,.hljs-built_in,.hljs-literal,.hljs-params,.hljs-constant{color:#f5871f}.ruby .hljs-class .hljs-title,.css .hljs-rules .hljs-attribute{color:#eab700}.hljs-string,.hljs-value,.hljs-inheritance,.hljs-header,.ruby .hljs-symbol,.xml .hljs-cdata{color:#718c00}.css .hljs-hexcolor{color:#3e999f}.hljs-function,.python .hljs-decorator,.python .hljs-title,.ruby .hljs-function .hljs-title,.ruby .hljs-title .hljs-keyword,.perl .hljs-sub,.javascript .hljs-title,.coffeescript .hljs-title{color:#4271ae}.hljs-keyword,.javascript .hljs-function{color:#8959a8}.hljs{display:block;background:white;color:#4d4d4c;padding:.5em}.coffeescript .javascript,.javascript .xml,.tex .hljs-formula,.xml .javascript,.xml .vbscript,.xml .css,.xml .hljs-cdata{opacity:.5}</style><style>body,
+h4,
+h5 {
+  font-family: 'Roboto' sans-serif !important;
+}
+h1,
+h2,
+h3,
+.aglio {
+  font-family: 'Raleway' sans-serif !important;
+}
+h1 a,
+h2 a,
+h3 a,
+h4 a,
+h5 a {
+  display: none;
+}
+h1:hover a,
+h2:hover a,
+h3:hover a,
+h4:hover a,
+h5:hover a {
+  display: inline;
+}
+code {
+  color: #444;
+  background-color: #ddd;
+  font-family: 'Inconsolata' monospace !important;
+}
+a[data-target] {
+  cursor: pointer;
+}
+h4 {
+  font-size: 100%;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+.back-to-top {
+  position: fixed;
+  z-index: 1;
+  bottom: 0px;
+  right: 24px;
+  padding: 4px 8px;
+  background-color: #eee;
+  text-decoration: none !important;
+  border-top: 1px solid rgba(0,0,0,0.1);
+  border-left: 1px solid rgba(0,0,0,0.1);
+  border-right: 1px solid rgba(0,0,0,0.1);
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+.panel {
+  overflow: hidden;
+}
+.panel-heading code {
+  color: #c7254e;
+  background-color: transparent;
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+.panel-heading h3 {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+a.list-group-item {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+a.list-group-item.heading {
+  background-color: #f5f5f5;
+}
+.list-group-item.collapse {
+  display: none;
+}
+.list-group-item.collapse.in {
+  display: block;
+}
+#nav {
+  margin-top: 38px;
+  min-width: 255px;
+  top: 0;
+  bottom: 0;
+  padding-right: 12px;
+  padding-bottom: 12px;
+  overflow-y: auto;
+}
+@media (max-width: 1199px) {
+  #nav {
+    min-width: 212px;
+  }
+}
+</style></head><body><a href="#top" class="text-muted back-to-top"><i class="fa fa-toggle-up"></i>&nbsp;Back to top</a><div class="container"><div class="row"><div class="col-md-3"><nav id="nav" class="hidden-sm hidden-xs affix nav"><div class="list-group"><a href="#task" class="list-group-item heading">Task</a><a href="#task-task" class="list-group-item"><i class="fa fa-bars"></i>&nbsp;Task</a><a href="#task-task-get" style="padding-left: 32px" class="list-group-item"><i class="fa fa-arrow-circle-down"></i>&nbsp;Retrive the list of task</a><a href="#task-task-post" style="padding-left: 32px" class="list-group-item"><i class="fa fa-plus-square"></i>&nbsp;Create a task</a><a href="#task-task-detail" class="list-group-item"><i class="fa fa-bars"></i>&nbsp;Task Detail</a><a href="#task-task-detail-get" style="padding-left: 32px" class="list-group-item"><i class="fa fa-arrow-circle-down"></i>&nbsp;Get a task</a><a href="#task-task-detail-put" style="padding-left: 32px" class="list-group-item"><i class="fa fa-pencil"></i>&nbsp;Update a task</a><a href="#task-task-detail-delete" style="padding-left: 32px" class="list-group-item"><i class="fa fa-warning"></i>&nbsp;Delete a task</a><a href="#task-start-a-task" class="list-group-item"><i class="fa fa-pencil"></i>&nbsp;Start a task</a><a href="#task-stop-a-task" class="list-group-item"><i class="fa fa-pencil"></i>&nbsp;Stop a task</a></div><div class="list-group"><a href="#taskinstance" class="list-group-item heading">TaskInstance</a><a href="#taskinstance-task" class="list-group-item"><i class="fa fa-bars"></i>&nbsp;Task</a><a href="#taskinstance-task-get" style="padding-left: 32px" class="list-group-item"><i class="fa fa-arrow-circle-down"></i>&nbsp;Retrive the list of taskinstance of a task</a><a href="#taskinstance-task-post" style="padding-left: 32px" class="list-group-item"><i class="fa fa-plus-square"></i>&nbsp;Create a taskInstance</a><a href="#taskinstance-taskinstance-detail" class="list-group-item"><i class="fa fa-bars"></i>&nbsp;TaskInstance Detail</a><a href="#taskinstance-taskinstance-detail-get" style="padding-left: 32px" class="list-group-item"><i class="fa fa-arrow-circle-down"></i>&nbsp;Get a task instnace</a><a href="#taskinstance-taskinstance-detail-put" style="padding-left: 32px" class="list-group-item"><i class="fa fa-pencil"></i>&nbsp;Update a task instance</a><a href="#taskinstance-taskinstance-detail-delete" style="padding-left: 32px" class="list-group-item"><i class="fa fa-warning"></i>&nbsp;Delete a task instance</a><a href="#taskinstance-start-a-task-instance" class="list-group-item"><i class="fa fa-plus-square"></i>&nbsp;Start a task instance</a><a href="#taskinstance-stop-a-task-instance" class="list-group-item"><i class="fa fa-plus-square"></i>&nbsp;Stop a task instance</a><a href="#taskinstance-assign-a-task-instance-to-a-worker" class="list-group-item"><i class="fa fa-plus-square"></i>&nbsp;Assign a task instance to a worker</a><a href="#taskinstance-execute-a-task-instance,-thus-update-the-task-instance-metadata" class="list-group-item"><i class="fa fa-plus-square"></i>&nbsp;Execute a task instance, thus update the task instance metadata</a><a href="#taskinstance-give-the-reward-to-an-worker-of-a-task-instance" class="list-group-item"><i class="fa fa-plus-square"></i>&nbsp;Give the reward to an worker of a task instance</a><a href="#taskinstance-reject-the-reward-to-an-worker-of-a-task-instance" class="list-group-item"><i class="fa fa-plus-square"></i>&nbsp;Reject the reward to an worker of a task instance</a><a href="#taskinstance-set-the-quality-of-a-task-instance" class="list-group-item"><i class="fa fa-plus-square"></i>&nbsp;Set the quality of a task instance</a><a href="#taskinstance-get-the-quality-of-a-task-instance" class="list-group-item"><i class="fa fa-arrow-circle-down"></i>&nbsp;Get the quality of a task instance</a></div></nav></div><div class="col-md-9"><div><header><div class="page-header"><h1 id="top">CrowdComputer (CroCo) API</h1></div></header><div class="description"><p>This is the <strong><em>Crowdcomputer API</em></strong>. This API provides and easy way to crowdsourcer your application.
+Building the future of Crowdsourcing API: crowdsourcing as a service</p>
+<p><a href="www.crowdcomputer.org">Crowdcomputer</a> is created at the University of Trento, Italy by <a href="www.stefanotranquillini.me">Stefano</a> and <a href="www.kucherbaev.com">Pavel</a>.</p>
+<h1 id="authorization">Authorization</h1>
+<p>The api are protected by a  <em>token</em> authentication. The platform accept two types of tokens that are meant to be used in two scnearios. The <em>single-requester-app</em> that should be used when the requester is the same person as the owner of the app, and <em>multiple-requesters-app</em> that is for applications that post tasks on behalf of other requesters.</p>
+<h2 id="single-requester-app">Single-requester-app</h2>
+<p>The token identifies the <em>application</em>.
+Example:</p>
+<pre><code>    e4f4fb816c42b3ff34cc8eb46654a75478fb74c9
+</code></pre><p>When a task is created with this token the requester becomes the owner of the application. 
+There’s no need to ask users to login (except for workers, they must be logged in in the platform)</p>
+<h2 id="multiple-requesters-app">Multiple-requesters-app</h2>
+<p>In this case the app can post task on behalf or other users.  Users (requesters) have to be logged in in the system (see the rest of this paragraph for clarification).</p>
+<p>The token identifies the <em>user</em> and the <em>application</em>. It is composed of two parts, seprated by a <code>/</code></p>
+<ul>
+<li>apptoken</li>
+<li>usertoken</li>
+</ul>
+<pre><code>    e4f4fb816c42b3ff34cc8eb46654a75478fb74c9/38ce17d422f52a3e3eb88a71c5a547a3e156973c
+</code></pre><h3 id="app-token-requester-login-and-authorization">App token, requester login and authorization</h3>
+<p>To be able to use the API you have to create an application (<em>URL NOT AVAILABLE YET</em>), which will automatically create an application token for you.
+The application token identifies your app, thus all the request made with that token will identifiy your application, for example: the list of task of a user is only the list of tasks of that user created with that application.</p>
+<p>The user token is given back to you app when a user logs in. To login a user, call this webpage (<code>../login?callback=&lt;your callback url&gt;</code>). Once the user logs in the page will redirect to the <code>callback</code> page you specified when u created your application.
+<em>Be sure that the <code>callback</code> that you specified when you created the app, and the one that you use as parameter of <code>/login</code> are the same.</em></p>
+<p>NB: The user has to grant access to the app before the app can act on his behalf. This will be managed by our login pages.</p>
+<p>User token will be appended to the url.</p>
+<p>Example:</p>
+<ul>
+<li><code>../login?callback=http://test.com</code></li>
+<li>users logs in</li>
+<li>app is granted by the user</li>
+<li>systems redirect to <code>http://test.com?token=38ce17d422f52a3e3eb88a71c5a547a3e156973c</code></li>
+</ul>
+<p><em>this is used to log in the requesters</em></p>
+<h1 id="api-list">API List</h1>
+</div></div><div><div class="panel panel-default"><div class="panel-heading"><h3 id="task">Task&nbsp;<a href="#task"><i class="fa fa-link"></i></a></h3></div><div class="panel-body"><h4 id="task-task">Task&nbsp;<a href="#task-task"><i class="fa fa-link"></i></a></h4><section id="task-task-get" class="panel panel-info"><div class="panel-heading"><div style="float:right"><span style="text-transform: lowercase">Retrive the list of task</span></div><div style="float:left"><a href="#task-task-get" class="btn btn-xs btn-primary">GET</a></div><div style="overflow:hidden"><code>/task/</code></div></div><div class="panel-body"><p>This method returns the list of tasks that are created by that specific application</p>
+</div><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#82b994d9d6d3114a0899d6d639dc0b42" class="pull-right">Toggle</a></li><li id="82b994d9d6d3114a0899d6d639dc0b42" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">text/plain</span><br><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token X/Y</span><br></code></pre><h5>Body</h5><pre><code><span class="hljs-rules">{<span class="hljs-rule">}</span></span>
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>201</code></strong><a data-toggle="collapse" data-target="#8f9f811b61cf0fab6cc431fb4215db4c" class="pull-right">Toggle</a></li><li id="8f9f811b61cf0fab6cc431fb4215db4c" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>[
+    {
+        "<span class="hljs-attribute">owner</span>": <span class="hljs-value"><span class="hljs-string">"stefano"</span></span>, 
+        "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">1</span></span>, 
+        "<span class="hljs-attribute">title</span>": <span class="hljs-value"><span class="hljs-string">"Task 1"</span></span>, 
+        "<span class="hljs-attribute">description</span>": <span class="hljs-value"><span class="hljs-string">"Desc Task 1"</span></span>, 
+        "<span class="hljs-attribute">date_created</span>": <span class="hljs-value"><span class="hljs-string">"2014-05-01T14:34:21.701"</span></span>, 
+        "<span class="hljs-attribute">date_deadline</span>": <span class="hljs-value"><span class="hljs-string">"2014-05-05T12:00:00Z"</span></span>, 
+        "<span class="hljs-attribute">status</span>": <span class="hljs-value"><span class="hljs-string">"ST"</span></span>, 
+        "<span class="hljs-attribute">uuid</span>": <span class="hljs-value"><span class="hljs-string">"52ed354a896a4ca38edd3946d58d7b06"</span></span>, 
+        "<span class="hljs-attribute">page_url</span>": <span class="hljs-value"><span class="hljs-string">"http://www.crowdcomputer.com/testpage.html"</span></span>,
+        "<span class="hljs-attribute">reward</span>" : <span class="hljs-value"><span class="hljs-number">1.0</span>
+    </span>}, 
+    {
+        "<span class="hljs-attribute">owner</span>": <span class="hljs-value"><span class="hljs-string">"stefano"</span></span>, 
+        "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">3</span></span>, 
+        "<span class="hljs-attribute">title</span>": <span class="hljs-value"><span class="hljs-string">"Task 2"</span></span>,
+        "<span class="hljs-attribute">description</span>": <span class="hljs-value"><span class="hljs-string">"task 2"</span></span>, 
+        "<span class="hljs-attribute">date_created</span>": <span class="hljs-value"><span class="hljs-string">"2014-05-01T20:08:40.446"</span></span>, 
+        "<span class="hljs-attribute">date_deadline</span>": <span class="hljs-value"><span class="hljs-string">"2014-05-05T12:00:00Z"</span></span>, 
+        "<span class="hljs-attribute">status</span>": <span class="hljs-value"><span class="hljs-string">"ST"</span></span>, 
+        "<span class="hljs-attribute">uuid</span>": <span class="hljs-value"><span class="hljs-string">"df78d71867de49029163aca10bf534de"</span></span>, 
+        "<span class="hljs-attribute">page_url</span>": <span class="hljs-value"><span class="hljs-string">"http://www.crowdcomputer.com/testpage.html"</span></span>,
+        "<span class="hljs-attribute">reward</span>" : <span class="hljs-value"><span class="hljs-number">1.0</span>
+    </span>}
+]
+</code></pre></li></ul></section><section id="task-task-post" class="panel panel-success"><div class="panel-heading"><div style="float:right"><span style="text-transform: lowercase">Create a task</span></div><div style="float:left"><a href="#task-task-post" class="btn btn-xs btn-success">POST</a></div><div style="overflow:hidden"><code>/task/</code></div></div><div class="panel-body"><p>This creates a task. <strong><em>Page URL</em></strong> must be an external webpage prepared following the instructions (NOT YET ONLINE). <strong><em>reward</em></strong> has to be specified in EUR.</p>
+</div><ul class="list-group"><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>JSON message</code></strong><a data-toggle="collapse" data-target="#2cccdd57fe752f6e21b54ea5bbd06952" class="pull-right">Toggle</a></li><li id="2cccdd57fe752f6e21b54ea5bbd06952" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token X/Y</span><br></code></pre><h5>Body</h5><pre><code>{
+    "<span class="hljs-attribute">title</span>" : <span class="hljs-value"><span class="hljs-string">"Task title"</span></span>,
+    "<span class="hljs-attribute">description</span>" : <span class="hljs-value"><span class="hljs-string">"Task Description"</span></span>,
+    "<span class="hljs-attribute">date_deadline</span>" : <span class="hljs-value"><span class="hljs-string">"2014-05-05T12:00:00Z"</span></span>,
+    "<span class="hljs-attribute">page_url</span>":<span class="hljs-value"><span class="hljs-string">"http://www.crowdcomputer.org/testme.html"</span></span>,
+    "<span class="hljs-attribute">reward</span>": <span class="hljs-value"><span class="hljs-number">0.5</span>
+</span>}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>201</code></strong><a data-toggle="collapse" data-target="#7551987e852035fb0527c8f49701c0fa" class="pull-right">Toggle</a></li><li id="7551987e852035fb0527c8f49701c0fa" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+    "<span class="hljs-attribute">owner</span>": <span class="hljs-value"><span class="hljs-string">"stefano"</span></span>, 
+    "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">4</span></span>, 
+    "<span class="hljs-attribute">title</span>": <span class="hljs-value"><span class="hljs-string">"Task title"</span></span>,
+    "<span class="hljs-attribute">description</span>": <span class="hljs-value"><span class="hljs-string">"Task Description"</span></span>, 
+    "<span class="hljs-attribute">date_created</span>": <span class="hljs-value"><span class="hljs-string">"2014-05-02T21:08:40.446"</span></span>, 
+    "<span class="hljs-attribute">date_deadline</span>": <span class="hljs-value"><span class="hljs-string">"2014-05-05T12:00:00Z"</span></span>, 
+    "<span class="hljs-attribute">status</span>": <span class="hljs-value"><span class="hljs-string">"ST"</span></span>, 
+    "<span class="hljs-attribute">uuid</span>": <span class="hljs-value"><span class="hljs-string">"feed552cd3174a49a4d1324e2cc53de8"</span></span>, 
+    "<span class="hljs-attribute">page_url</span>": <span class="hljs-value"><span class="hljs-string">"http://www.crowdcomputer.com/testme.html"</span></span>,
+    "<span class="hljs-attribute">reward</span>" : <span class="hljs-value"><span class="hljs-number">0.5</span>
+</span>}
+</code></pre></li></ul></section><h4 id="task-task-detail">Task Detail&nbsp;<a href="#task-task-detail"><i class="fa fa-link"></i></a></h4><section id="task-task-detail-get" class="panel panel-info"><div class="panel-heading"><div style="float:right"><span style="text-transform: lowercase">Get a task</span></div><div style="float:left"><a href="#task-task-detail-get" class="btn btn-xs btn-primary">GET</a></div><div style="overflow:hidden"><code>/task/{id}/</code></div></div><div class="panel-body"><p>This updates a task.</p>
+</div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>id</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>The id of the task.</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>JSON message</code></strong><a data-toggle="collapse" data-target="#a87458516adc05065cda13adb0eeb9a7" class="pull-right">Toggle</a></li><li id="a87458516adc05065cda13adb0eeb9a7" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token X/Y</span><br></code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#d7892f29314c7f71c094f3dc9a363adc" class="pull-right">Toggle</a></li><li id="d7892f29314c7f71c094f3dc9a363adc" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+    "<span class="hljs-attribute">owner</span>": <span class="hljs-value"><span class="hljs-string">"stefano"</span></span>, 
+    "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">4</span></span>, 
+    "<span class="hljs-attribute">title</span>": <span class="hljs-value"><span class="hljs-string">"Task title edited"</span></span>,
+    "<span class="hljs-attribute">description</span>": <span class="hljs-value"><span class="hljs-string">"Task Description"</span></span>, 
+    "<span class="hljs-attribute">date_created</span>": <span class="hljs-value"><span class="hljs-string">"2014-05-02T21:08:40.446"</span></span>, 
+    "<span class="hljs-attribute">date_deadline</span>": <span class="hljs-value"><span class="hljs-string">"2014-05-05T12:00:00Z"</span></span>, 
+    "<span class="hljs-attribute">status</span>": <span class="hljs-value"><span class="hljs-string">"ST"</span></span>, 
+    "<span class="hljs-attribute">uuid</span>": <span class="hljs-value"><span class="hljs-string">"feed552cd3174a49a4d1324e2cc53de8"</span></span>, 
+    "<span class="hljs-attribute">page_url</span>": <span class="hljs-value"><span class="hljs-string">"http://www.crowdcomputer.com/testme.html"</span></span>,
+    "<span class="hljs-attribute">reward</span>" : <span class="hljs-value"><span class="hljs-number">0.5</span>
+</span>}
+</code></pre></li></ul></section><section id="task-task-detail-put" class="panel panel-warning"><div class="panel-heading"><div style="float:right"><span style="text-transform: lowercase">Update a task</span></div><div style="float:left"><a href="#task-task-detail-put" class="btn btn-xs btn-warning">PUT</a></div><div style="overflow:hidden"><code>/task/{id}/</code></div></div><div class="panel-body"><p>This updates a task.</p>
+</div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>id</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>The id of the task.</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>JSON message</code></strong><a data-toggle="collapse" data-target="#9bf34c64175ceb42a464f662cd07e861" class="pull-right">Toggle</a></li><li id="9bf34c64175ceb42a464f662cd07e861" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token X/Y</span><br></code></pre><h5>Body</h5><pre><code>{
+    "<span class="hljs-attribute">title</span>" : <span class="hljs-value"><span class="hljs-string">"Task title edited"</span></span>,
+    "<span class="hljs-attribute">description</span>" : <span class="hljs-value"><span class="hljs-string">"Task Description"</span></span>,
+    "<span class="hljs-attribute">date_deadline</span>" : <span class="hljs-value"><span class="hljs-string">"2014-05-05T12:00:00Z"</span></span>,
+    "<span class="hljs-attribute">page_url</span>":<span class="hljs-value"><span class="hljs-string">"http://www.crowdcomputer.org/testme.html"</span></span>,
+    "<span class="hljs-attribute">reward</span>": <span class="hljs-value"><span class="hljs-number">0.5</span>
+</span>}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#c06a7d541b8b1bd92be49f972df6a13c" class="pull-right">Toggle</a></li><li id="c06a7d541b8b1bd92be49f972df6a13c" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+    "<span class="hljs-attribute">owner</span>": <span class="hljs-value"><span class="hljs-string">"stefano"</span></span>, 
+    "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">4</span></span>, 
+    "<span class="hljs-attribute">title</span>": <span class="hljs-value"><span class="hljs-string">"Task title edited"</span></span>,
+    "<span class="hljs-attribute">description</span>": <span class="hljs-value"><span class="hljs-string">"Task Description"</span></span>, 
+    "<span class="hljs-attribute">date_created</span>": <span class="hljs-value"><span class="hljs-string">"2014-05-02T21:08:40.446"</span></span>, 
+    "<span class="hljs-attribute">date_deadline</span>": <span class="hljs-value"><span class="hljs-string">"2014-05-05T12:00:00Z"</span></span>, 
+    "<span class="hljs-attribute">status</span>": <span class="hljs-value"><span class="hljs-string">"ST"</span></span>, 
+    "<span class="hljs-attribute">uuid</span>": <span class="hljs-value"><span class="hljs-string">"feed552cd3174a49a4d1324e2cc53de8"</span></span>, 
+    "<span class="hljs-attribute">page_url</span>": <span class="hljs-value"><span class="hljs-string">"http://www.crowdcomputer.com/testme.html"</span></span>,
+    "<span class="hljs-attribute">reward</span>" : <span class="hljs-value"><span class="hljs-number">0.5</span>
+</span>}
+</code></pre></li></ul></section><section id="task-task-detail-delete" class="panel panel-danger"><div class="panel-heading"><div style="float:right"><span style="text-transform: lowercase">Delete a task</span></div><div style="float:left"><a href="#task-task-detail-delete" class="btn btn-xs btn-danger">DELETE</a></div><div style="overflow:hidden"><code>/task/{id}/</code></div></div><div class="panel-body"><p>This delete a task.</p>
+</div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>id</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>The id of the task.</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#e93a973f75521ddcef7d3ecfc1b26369" class="pull-right">Toggle</a></li><li id="e93a973f75521ddcef7d3ecfc1b26369" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">*/*</span><br><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token X/Y</span><br></code></pre><h5>Body</h5><pre><code><span class="hljs-rules">{<span class="hljs-rule">}</span></span>
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>204</code></strong></li></ul></section><h4 id="task-start-a-task">Start a task&nbsp;<a href="#task-start-a-task"><i class="fa fa-link"></i></a></h4><p>This starts a task</p>
+<section id="task-start-a-task-put" class="panel panel-warning"><div class="panel-heading"><div style="float:right"><span style="text-transform: lowercase">Start</span></div><div style="float:left"><a href="#task-start-a-task-put" class="btn btn-xs btn-warning">PUT</a></div><div style="overflow:hidden"><code>/task/{id}/start/</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>id</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>The id of the task.</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#6fb9dc3706a1bada92b82e931ef7d5a1" class="pull-right">Toggle</a></li><li id="6fb9dc3706a1bada92b82e931ef7d5a1" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">*/*</span><br><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token X/Y</span><br></code></pre><h5>Body</h5><pre><code><span class="hljs-rules">{<span class="hljs-rule">}</span></span>
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#00f3b9cdb2834256577cc3c121fb2b00" class="pull-right">Toggle</a></li><li id="00f3b9cdb2834256577cc3c121fb2b00" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+    <span class="hljs-string">'status'</span>:<span class="hljs-string">'PR'</span>
+}  
+</code></pre></li></ul></section><h4 id="task-stop-a-task">Stop a task&nbsp;<a href="#task-stop-a-task"><i class="fa fa-link"></i></a></h4><p>This stops a task</p>
+<section id="task-stop-a-task-put" class="panel panel-warning"><div class="panel-heading"><div style="float:right"><span style="text-transform: lowercase">Stop</span></div><div style="float:left"><a href="#task-stop-a-task-put" class="btn btn-xs btn-warning">PUT</a></div><div style="overflow:hidden"><code>/task/{id}/stop/</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>id</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>The id of the task.</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#a2ac24e94ee9919a250fe772b546bfa6" class="pull-right">Toggle</a></li><li id="a2ac24e94ee9919a250fe772b546bfa6" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">*/*</span><br><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token X/Y</span><br></code></pre><h5>Body</h5><pre><code><span class="hljs-rules">{<span class="hljs-rule">}</span></span>
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#55118c589f8ac2bcd05283c43126982d" class="pull-right">Toggle</a></li><li id="55118c589f8ac2bcd05283c43126982d" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+    <span class="hljs-string">'status'</span>:<span class="hljs-string">'ST'</span>
+}  
+</code></pre></li></ul></section></div></div></div><div><div class="panel panel-default"><div class="panel-heading"><h3 id="taskinstance">TaskInstance&nbsp;<a href="#taskinstance"><i class="fa fa-link"></i></a></h3></div><div class="panel-body"><h4 id="taskinstance-task">Task&nbsp;<a href="#taskinstance-task"><i class="fa fa-link"></i></a></h4><section id="taskinstance-task-get" class="panel panel-info"><div class="panel-heading"><div style="float:right"><span style="text-transform: lowercase">Retrive the list of taskinstance of a task</span></div><div style="float:left"><a href="#taskinstance-task-get" class="btn btn-xs btn-primary">GET</a></div><div style="overflow:hidden"><code>/task/{id}/taskinstance</code></div></div><div class="panel-body"><p>This method returns the list of the task instances of the task identified with <code>id</code></p>
+</div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>id</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>The id of the task.</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#b0820579a445b3c6d33edcaca71ffd47" class="pull-right">Toggle</a></li><li id="b0820579a445b3c6d33edcaca71ffd47" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">text/plain</span><br><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token X/Y</span><br></code></pre><h5>Body</h5><pre><code><span class="hljs-rules">{<span class="hljs-rule">}</span></span>
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>201</code></strong><a data-toggle="collapse" data-target="#33196334712df536b935bab9ac8681eb" class="pull-right">Toggle</a></li><li id="33196334712df536b935bab9ac8681eb" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>[
+   <span class="hljs-keyword">...</span>
+]
+</code></pre></li></ul></section><section id="taskinstance-task-post" class="panel panel-success"><div class="panel-heading"><div style="float:right"><span style="text-transform: lowercase">Create a taskInstance</span></div><div style="float:left"><a href="#taskinstance-task-post" class="btn btn-xs btn-success">POST</a></div><div style="overflow:hidden"><code>/task/{id}/taskinstance</code></div></div><div class="panel-body"><p>This creates a task instance. <strong><em>input</em></strong> is the input data for that specific instnace.
+This functions checks if the balamnce of the workers is enough to pay this instance.</p>
+</div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>id</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>The id of the task.</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>JSON message</code></strong><a data-toggle="collapse" data-target="#481b3454ac4f590335f55b416f7bd0b0" class="pull-right">Toggle</a></li><li id="481b3454ac4f590335f55b416f7bd0b0" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token X/Y</span><br></code></pre><h5>Body</h5><pre><code>{
+    <span class="hljs-string">"input"</span> : {} <span class="hljs-comment">//optional, must be a json</span>
+}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>201</code></strong><a data-toggle="collapse" data-target="#ed263b927d130f3fb672248bd8b95ebc" class="pull-right">Toggle</a></li><li id="ed263b927d130f3fb672248bd8b95ebc" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+    <span class="hljs-keyword">...</span>
+}
+</code></pre></li></ul></section><h4 id="taskinstance-taskinstance-detail">TaskInstance Detail&nbsp;<a href="#taskinstance-taskinstance-detail"><i class="fa fa-link"></i></a></h4><section id="taskinstance-taskinstance-detail-get" class="panel panel-info"><div class="panel-heading"><div style="float:right"><span style="text-transform: lowercase">Get a task instnace</span></div><div style="float:left"><a href="#taskinstance-taskinstance-detail-get" class="btn btn-xs btn-primary">GET</a></div><div style="overflow:hidden"><code>/task/{id}/taskinstance/{id_instance}/</code></div></div><div class="panel-body"><p>This returns the details of  a task instance.</p>
+</div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>id</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>The id of the task.</p>
+</dd><dt>id_instance</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>The id of the task instance.</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>JSON message</code></strong><a data-toggle="collapse" data-target="#c1ae7b28a902a3520bdf7c3bafef5ba7" class="pull-right">Toggle</a></li><li id="c1ae7b28a902a3520bdf7c3bafef5ba7" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token X/Y</span><br></code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#e6de8ba3a36bdeed92e7b00cb18a09f2" class="pull-right">Toggle</a></li><li id="e6de8ba3a36bdeed92e7b00cb18a09f2" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+<span class="hljs-keyword">...</span>
+}
+</code></pre></li></ul></section><section id="taskinstance-taskinstance-detail-put" class="panel panel-warning"><div class="panel-heading"><div style="float:right"><span style="text-transform: lowercase">Update a task instance</span></div><div style="float:left"><a href="#taskinstance-taskinstance-detail-put" class="btn btn-xs btn-warning">PUT</a></div><div style="overflow:hidden"><code>/task/{id}/taskinstance/{id_instance}/</code></div></div><div class="panel-body"><p>This updates a task instance.</p>
+</div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>id</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>The id of the task.</p>
+</dd><dt>id_instance</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>The id of the task instance.</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>JSON message</code></strong><a data-toggle="collapse" data-target="#00b6b6b14a5d4c203b53e38dc4ea0972" class="pull-right">Toggle</a></li><li id="00b6b6b14a5d4c203b53e38dc4ea0972" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token X/Y</span><br></code></pre><h5>Body</h5><pre><code>{
+  <span class="hljs-keyword">...</span>
+}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#dad70203b15a80bd6467fd21504fb670" class="pull-right">Toggle</a></li><li id="dad70203b15a80bd6467fd21504fb670" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+   <span class="hljs-keyword">...</span>
+}
+</code></pre></li></ul></section><section id="taskinstance-taskinstance-detail-delete" class="panel panel-danger"><div class="panel-heading"><div style="float:right"><span style="text-transform: lowercase">Delete a task instance</span></div><div style="float:left"><a href="#taskinstance-taskinstance-detail-delete" class="btn btn-xs btn-danger">DELETE</a></div><div style="overflow:hidden"><code>/task/{id}/taskinstance/{id_instance}/</code></div></div><div class="panel-body"><p>This delete a task.</p>
+</div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>id</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>The id of the task.</p>
+</dd><dt>id_instance</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>The id of the task instance.</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#8e8ebd9095819cc8389e87429ec1448b" class="pull-right">Toggle</a></li><li id="8e8ebd9095819cc8389e87429ec1448b" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">*/*</span><br><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token X/Y</span><br></code></pre><h5>Body</h5><pre><code><span class="hljs-rules">{<span class="hljs-rule">}</span></span>
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>204</code></strong></li></ul></section><h4 id="taskinstance-start-a-task-instance">Start a task instance&nbsp;<a href="#taskinstance-start-a-task-instance"><i class="fa fa-link"></i></a></h4><p>This starts a task</p>
+<section id="taskinstance-start-a-task-instance-post" class="panel panel-success"><div class="panel-heading"><div style="float:right"><span style="text-transform: lowercase">Start</span></div><div style="float:left"><a href="#taskinstance-start-a-task-instance-post" class="btn btn-xs btn-success">POST</a></div><div style="overflow:hidden"><code>/task/{id}/taskinstance/{id_instance}/start/</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>id</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>The id of the task.</p>
+</dd><dt>id_instance</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>The id of the task instance.</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#fefa33b1b39aa30011e6649c6e5e8325" class="pull-right">Toggle</a></li><li id="fefa33b1b39aa30011e6649c6e5e8325" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">*/*</span><br><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token X/Y</span><br></code></pre><h5>Body</h5><pre><code><span class="hljs-rules">{<span class="hljs-rule">}</span></span>
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#281f70f866111bee1c54b1ddcd45658f" class="pull-right">Toggle</a></li><li id="281f70f866111bee1c54b1ddcd45658f" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+    <span class="hljs-string">'status'</span>:<span class="hljs-string">'PR'</span>
+}  
+</code></pre></li></ul></section><h4 id="taskinstance-stop-a-task-instance">Stop a task instance&nbsp;<a href="#taskinstance-stop-a-task-instance"><i class="fa fa-link"></i></a></h4><p>This stops a task</p>
+<section id="taskinstance-stop-a-task-instance-post" class="panel panel-success"><div class="panel-heading"><div style="float:right"><span style="text-transform: lowercase">Stop</span></div><div style="float:left"><a href="#taskinstance-stop-a-task-instance-post" class="btn btn-xs btn-success">POST</a></div><div style="overflow:hidden"><code>/task/{id}/taskinstance/{id_instance}/stop/</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>id</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>The id of the task.</p>
+</dd><dt>id_instance</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>The id of the task instance.</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#e61d80123665f6c6d5639af82e312644" class="pull-right">Toggle</a></li><li id="e61d80123665f6c6d5639af82e312644" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">*/*</span><br><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token X/Y</span><br></code></pre><h5>Body</h5><pre><code><span class="hljs-rules">{<span class="hljs-rule">}</span></span>
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#fdef439ca404e8d9955ca3211050442c" class="pull-right">Toggle</a></li><li id="fdef439ca404e8d9955ca3211050442c" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+    <span class="hljs-string">'status'</span>:<span class="hljs-string">'ST'</span>
+}  
+</code></pre></li></ul></section><h4 id="taskinstance-assign-a-task-instance-to-a-worker">Assign a task instance to a worker&nbsp;<a href="#taskinstance-assign-a-task-instance-to-a-worker"><i class="fa fa-link"></i></a></h4><p>This assign the task instance to a worker</p>
+<section id="taskinstance-assign-a-task-instance-to-a-worker-post" class="panel panel-success"><div class="panel-heading"><div style="float:right"><span style="text-transform: lowercase">Assign</span></div><div style="float:left"><a href="#taskinstance-assign-a-task-instance-to-a-worker-post" class="btn btn-xs btn-success">POST</a></div><div style="overflow:hidden"><code>/task/{id}/taskinstance/{id_instance}/assign/</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>id</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>The id of the task.</p>
+</dd><dt>id_instance</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>The id of the task instance.</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#6f3d1c80e857a443aa0f1c053d015869" class="pull-right">Toggle</a></li><li id="6f3d1c80e857a443aa0f1c053d015869" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">*/*</span><br><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token X/Y</span><br></code></pre><h5>Body</h5><pre><code>{
+    <span class="hljs-string">'worker'</span>: <span class="hljs-number">1</span> <span class="hljs-comment">//id of the worker</span>
+
+}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#594d2c031d5098f2dc8362fb2c583c22" class="pull-right">Toggle</a></li><li id="594d2c031d5098f2dc8362fb2c583c22" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+   <span class="hljs-keyword">...</span>
+}  
+</code></pre></li></ul></section><h4 id="taskinstance-execute-a-task-instance,-thus-update-the-task-instance-metadata">Execute a task instance, thus update the task instance metadata&nbsp;<a href="#taskinstance-execute-a-task-instance,-thus-update-the-task-instance-metadata"><i class="fa fa-link"></i></a></h4><p>This updates the task instance metadata.</p>
+<section id="taskinstance-execute-a-task-instance,-thus-update-the-task-instance-metadata-post" class="panel panel-success"><div class="panel-heading"><div style="float:right"><span style="text-transform: lowercase">Execute</span></div><div style="float:left"><a href="#taskinstance-execute-a-task-instance,-thus-update-the-task-instance-metadata-post" class="btn btn-xs btn-success">POST</a></div><div style="overflow:hidden"><code>/task/{id}/taskinstance/{id_instance}/execute/</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>id</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>The id of the task.</p>
+</dd><dt>id_instance</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>The id of the task instance.</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#a705f7d5097878d78a92c0b7dbc91f97" class="pull-right">Toggle</a></li><li id="a705f7d5097878d78a92c0b7dbc91f97" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">*/*</span><br><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token X/Y</span><br></code></pre><h5>Body</h5><pre><code>{
+    <span class="hljs-string">'result'</span>: {} <span class="hljs-comment">//a json object</span>
+
+}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#3fd0a7235db92113138f6fd70ca8de48" class="pull-right">Toggle</a></li><li id="3fd0a7235db92113138f6fd70ca8de48" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+   <span class="hljs-keyword">...</span>
+}
+</code></pre></li></ul></section><h4 id="taskinstance-give-the-reward-to-an-worker-of-a-task-instance">Give the reward to an worker of a task instance&nbsp;<a href="#taskinstance-give-the-reward-to-an-worker-of-a-task-instance"><i class="fa fa-link"></i></a></h4><p>This give the reward to the worker of the instance taking the money from the requester account.</p>
+<section id="taskinstance-give-the-reward-to-an-worker-of-a-task-instance-post" class="panel panel-success"><div class="panel-heading"><div style="float:right"><span style="text-transform: lowercase">Execute</span></div><div style="float:left"><a href="#taskinstance-give-the-reward-to-an-worker-of-a-task-instance-post" class="btn btn-xs btn-success">POST</a></div><div style="overflow:hidden"><code>/task/{id}/taskinstance/{id_instance}/reward_give/</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>id</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>The id of the task.</p>
+</dd><dt>id_instance</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>The id of the task instance.</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#ee48aff2a0f6416fb4067aa1e1470953" class="pull-right">Toggle</a></li><li id="ee48aff2a0f6416fb4067aa1e1470953" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">*/*</span><br><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token X/Y</span><br></code></pre><h5>Body</h5><pre><code><span class="hljs-rules">{<span class="hljs-rule">}</span></span>
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#3bd1cae3c009f24a903c24189aae7b04" class="pull-right">Toggle</a></li><li id="3bd1cae3c009f24a903c24189aae7b04" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+   <span class="hljs-string">'details'</span>:  <span class="hljs-string">'Reward of ... given'</span>
+}
+</code></pre></li></ul></section><h4 id="taskinstance-reject-the-reward-to-an-worker-of-a-task-instance">Reject the reward to an worker of a task instance&nbsp;<a href="#taskinstance-reject-the-reward-to-an-worker-of-a-task-instance"><i class="fa fa-link"></i></a></h4><p>This rejects the reward for a worker.</p>
+<section id="taskinstance-reject-the-reward-to-an-worker-of-a-task-instance-post" class="panel panel-success"><div class="panel-heading"><div style="float:right"><span style="text-transform: lowercase">Execute</span></div><div style="float:left"><a href="#taskinstance-reject-the-reward-to-an-worker-of-a-task-instance-post" class="btn btn-xs btn-success">POST</a></div><div style="overflow:hidden"><code>/task/{id}/taskinstance/{id_instance}/reward_reject/</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>id</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>The id of the task.</p>
+</dd><dt>id_instance</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>The id of the task instance.</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#c0ff77abd23d24388207602c86d9254f" class="pull-right">Toggle</a></li><li id="c0ff77abd23d24388207602c86d9254f" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">*/*</span><br><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token X/Y</span><br></code></pre><h5>Body</h5><pre><code><span class="hljs-rules">{<span class="hljs-rule">}</span></span>
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#46a323428b38364e6e576d2534b52d8b" class="pull-right">Toggle</a></li><li id="46a323428b38364e6e576d2534b52d8b" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+   <span class="hljs-string">'details'</span>:  <span class="hljs-string">'Reward of ... rejected'</span>
+}
+</code></pre></li></ul></section><h4 id="taskinstance-set-the-quality-of-a-task-instance">Set the quality of a task instance&nbsp;<a href="#taskinstance-set-the-quality-of-a-task-instance"><i class="fa fa-link"></i></a></h4><p>This sets the quality of a task instance</p>
+<section id="taskinstance-set-the-quality-of-a-task-instance-post" class="panel panel-success"><div class="panel-heading"><div style="float:right"><span style="text-transform: lowercase">Execute</span></div><div style="float:left"><a href="#taskinstance-set-the-quality-of-a-task-instance-post" class="btn btn-xs btn-success">POST</a></div><div style="overflow:hidden"><code>/task/{id}/taskinstance/{id_instance}/quality_set/</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>id</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>The id of the task.</p>
+</dd><dt>id_instance</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>The id of the task instance.</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#439397d249b53127ef152708b50ff169" class="pull-right">Toggle</a></li><li id="439397d249b53127ef152708b50ff169" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">*/*</span><br><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token X/Y</span><br></code></pre><h5>Body</h5><pre><code>{
+    <span class="hljs-string">'value'</span>: <span class="hljs-number">55</span> <span class="hljs-comment">//number between 0 and 100</span>
+}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#6c50a2adcbd4e9425ac5705dd69b8bc8" class="pull-right">Toggle</a></li><li id="6c50a2adcbd4e9425ac5705dd69b8bc8" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+   <span class="hljs-string">'details'</span>:  <span class="hljs-string">'Quality set'</span>
+}
+</code></pre></li></ul></section><h4 id="taskinstance-get-the-quality-of-a-task-instance">Get the quality of a task instance&nbsp;<a href="#taskinstance-get-the-quality-of-a-task-instance"><i class="fa fa-link"></i></a></h4><p>This gets the quality of a task instance</p>
+<section id="taskinstance-get-the-quality-of-a-task-instance-get" class="panel panel-info"><div class="panel-heading"><div style="float:right"><span style="text-transform: lowercase">Execute</span></div><div style="float:left"><a href="#taskinstance-get-the-quality-of-a-task-instance-get" class="btn btn-xs btn-primary">GET</a></div><div style="overflow:hidden"><code>/task/{id}/taskinstance/{id_instance}/qualit_get/</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>id</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>The id of the task.</p>
+</dd><dt>id_instance</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>The id of the task instance.</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#77878727d0c230d63076cce5f4316876" class="pull-right">Toggle</a></li><li id="77878727d0c230d63076cce5f4316876" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">*/*</span><br><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token X/Y</span><br></code></pre><h5>Body</h5><pre><code><span class="hljs-rules">{
+<span class="hljs-rule">}</span></span>
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#a869630ad053afa03e625b2f5b12f21a" class="pull-right">Toggle</a></li><li id="a869630ad053afa03e625b2f5b12f21a" class="list-group-item panel-collapse collapse"><div class="description"></div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+   <span class="hljs-string">'value'</span>:  <span class="hljs-number">55</span>
+}
+</code></pre></li></ul></section></div></div></div></div></div></div><p style="text-align: center;" class="text-muted">Generated by&nbsp;<a href="https://github.com/danielgtaylor/aglio" class="aglio">aglio</a>&nbsp;on 30 Jun 2014</p><div id="localFile" style="display: none; position: absolute; top: 0; left: 0; width: 100%; color: white; background: red; font-size: 150%; text-align: center; padding: 1em;">This page may not display correctly when opened as a local file. Instead, view it from a web server.
+
+</div></body><script src="//code.jquery.com/jquery-1.11.0.min.js"></script><script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script><script>(function() {
+  if (location.protocol === 'file:') {
+    document.getElementById('localFile').style.display = 'block';
+  }
+
+}).call(this);
+</script><script>(function() {
+  $('table').addClass('table');
+
+}).call(this);
+</script></html>
